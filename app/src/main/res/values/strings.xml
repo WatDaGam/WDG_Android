@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Watdagam</string>
+
+    <string name="nickname_placeholder">닉네임</string>
+    <string name="nickname_suffix_text">왔다감!</string>
+    <string name="nickname_submit">확인</string>
+
 </resources>
