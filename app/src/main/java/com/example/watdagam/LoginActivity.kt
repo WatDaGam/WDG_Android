@@ -12,11 +12,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import com.example.watdagam.api.ApiService
-import com.kakao.sdk.auth.model.OAuthToken
+import com.example.watdagam.api.KakaoService
 import com.kakao.sdk.common.KakaoSdk
-import com.kakao.sdk.common.model.ClientError
-import com.kakao.sdk.common.model.ClientErrorCause
-import com.kakao.sdk.user.UserApiClient
 import retrofit2.Call
 import retrofit2.Response
 
@@ -47,81 +44,52 @@ class LoginActivity : AppCompatActivity() {
             })
         }.start()
 
-        loginButtonKakao.setOnClickListener{
-            loginWithKakao()
+        loginButtonKakao.setOnClickListener {
+            val kakaoService = KakaoService.getInstance(this)
+            kakaoService.login(
+                onSuccess = { accessToken: String -> onKakaoLoginSuccess(accessToken) },
+                onFailure = { -> onKakaoLoginFailure() },
+            )
         }
     }
 
-    private fun loginWithKakao() {
-        val tag = "KakaoLogin"
+    private fun onKakaoLoginSuccess(accessToken: String) {
+        val apiService: ApiService = ApiService.getInstance(this)
+        apiService.login(
+            "KAKAO",
+            accessToken,
+            onSuccess = { _: Call<Void>, response: Response<Void> -> onWDGLoginSuccess(response) },
+            onFailure = { _: Call<Void>, _: Throwable -> onWDGLoginFailure() },
+        )
+    }
 
-        //로그인 성공시 호출될 함수
-        fun kakaoLoginSuccess(accessToken: String) {
-            Toast.makeText(this, "access token: $accessToken", Toast.LENGTH_SHORT).show()
-            val apiService: ApiService = ApiService.getInstance(this)
-            apiService.login("KAKAO", accessToken) {
-                _: Call<Void>, response: Response<Void> ->
-                if (response.isSuccessful.not()) {
-                    Log.e("WDG", "Fail $response")
-                } else {
-                    Log.d("WDG", "Success ${response.code()}")
-                    when (response.code()) {
-                        200 -> {
-                            // Move to list page
-                            val intent = Intent(this@LoginActivity, ListActivity::class.java)
-                            startActivity(intent)
-                        }
+    private fun onKakaoLoginFailure() {
+        Toast.makeText(this, "카카오 로그인 실패", Toast.LENGTH_SHORT).show()
+    }
 
-                        201 -> {
-                            // Move to signup page
-                            val intent = Intent(this@LoginActivity, SignupActivity::class.java)
-                            startActivity(intent)
-                        }
-                    }
-                }
-            }
-        }
-
-        // 로그인 실패시 호출될 함수
-        fun kakaoLoginFail() {
-            Toast.makeText(this, "로그인 실패", Toast.LENGTH_SHORT).show()
-        }
-
-        // 카카오계정으로 로그인 공통 callback 구성
-        // 카카오톡으로 로그인 할 수 없어 카카오계정으로 로그인할 경우 사용됨
-        val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-            if (error != null) {
-                Log.e(tag, "카카오계정으로 로그인 실패", error)
-                kakaoLoginFail()
-            } else if (token != null) {
-                Log.i(tag, "카카오계정으로 로그인 성공 ${token.accessToken}")
-                kakaoLoginSuccess(token.accessToken)
-            }
-        }
-
-        // 카카오톡이 설치되어 있으면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
-        if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
-            UserApiClient.instance.loginWithKakaoTalk(this) { token, error ->
-                if (error != null) {
-                    Log.e(tag, "카카오톡으로 로그인 실패", error)
-                    kakaoLoginFail()
-
-                    // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우,
-                    // 의도적인 로그인 취소로 보고 카카오계정으로 로그인 시도 없이 로그인 취소로 처리 (예: 뒤로 가기)
-                    if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
-                        return@loginWithKakaoTalk
-                    }
-
-                    // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
-                    UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
-                } else if (token != null) {
-                    Log.i(tag, "카카오톡으로 로그인 성공 ${token.accessToken}")
-                    kakaoLoginSuccess(token.accessToken)
-                }
-            }
+    private fun onWDGLoginSuccess(response: Response<Void>) {
+        if (response.isSuccessful.not()) {
+            Log.e("WDG_LOGIN", "Fail $response")
+            Toast.makeText(this, "로그인 하지 못했습니다. 잠시 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
         } else {
-            UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+            Log.d("WDG_LOGIN", "Success ${response.code()}")
+            when (response.code()) {
+                200 -> {
+                    // Move to list page
+                    val intent = Intent(this@LoginActivity, ListActivity::class.java)
+                    startActivity(intent)
+                }
+
+                201 -> {
+                    // Move to signup page
+                    val intent = Intent(this@LoginActivity, SignupActivity::class.java)
+                    startActivity(intent)
+                }
+            }
         }
     }
 
+    private fun onWDGLoginFailure() {
+        Toast.makeText(this, "로그인 하지 못했습니다. 잠시 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
+    }
 }

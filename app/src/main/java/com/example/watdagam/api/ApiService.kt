@@ -14,9 +14,12 @@ import retrofit2.http.Query
 class ApiService private constructor() {
     companion object {
         private var instance: ApiService? = null
+        private lateinit var appContext: Context
         private lateinit var token_pref: TokenSharedPreference
 
-        private const val BASE_URL: String = "https://0b88436b-a8a0-463a-bb4d-07b31d747be2.mock.pstmn.io"
+        private const val TAG = "WDG_API"
+        private const val BASE_URL: String = "http://52.78.126.48:8080"
+//        private const val BASE_URL: String = "https://0b88436b-a8a0-463a-bb4d-07b31d747be2.mock.pstmn.io"
         private val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -25,9 +28,9 @@ class ApiService private constructor() {
 
         fun getInstance(context: Context): ApiService {
             return instance ?: ApiService().also {
-                token_pref = TokenSharedPreference(context)
+                appContext = context.applicationContext
+                token_pref = TokenSharedPreference(appContext)
                 instance = it
-                Log.d("WDG", "initialized")
             }
         }
 
@@ -64,9 +67,10 @@ class ApiService private constructor() {
     }
 
      fun login(
-        platform: String,
-        platformToken: String,
-        callback: (Call<Void>, Response<Void>) -> Unit,
+         platform: String,
+         platformToken: String,
+         onSuccess: (Call<Void>, Response<Void>) -> Unit,
+         onFailure: (Call<Void>, Throwable) -> Unit,
     ) {
         val response = apiService.login(
             platform,
@@ -74,15 +78,17 @@ class ApiService private constructor() {
         )
         response.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.d(TAG, "로그인 요청 성공: ${response.code()} ${response.message()}")
                 if (response.isSuccessful) {
                     token_pref.accessToken = response.headers()["accessToken"]
                     token_pref.refreshToken = response.headers()["refreshToken"]
                 }
-                callback(call, response)
+                onSuccess(call, response)
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                TODO("Not yet implemented")
+                Log.e(TAG, "로그인 요청 실패")
+                onFailure(call, t)
             }
         })
     }
