@@ -3,6 +3,11 @@
 
     <string name="nickname_placeholder">닉네임</string>
     <string name="nickname_suffix_text">왔다감!</string>
-    <string name="nickname_submit">확인</string>
+    <string name="nickname_button_check">확인</string>
+    <string name="nickname_button_signup">가입하기</string>
+    <string name="nickname_noti_info">닉네임은 2자부터 10자까지 설정할 수 있습니다.</string>
+    <string name="nickname_noti_invalid">이 닉네임은 사용할 수 없습니다.</string>
+    <string name="nickname_noti_valid">이 닉네임은 사용할 수 있습니다.</string>
+    <string name="alt_info">정보</string>
 
 </resources>
