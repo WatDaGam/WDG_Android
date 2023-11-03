@@ -8,4 +8,8 @@
     <color name="blue">#FF007AFF</color>
     <color name="green">#FF39C95E</color>
 
+    <color name="navigation_background">#FFFFFFFF</color>
+    <color name="navigation_default">#FF000000</color>
+    <color name="navigation_selected">#FFC4C4C4</color>
+
 </resources>
