@@ -1,0 +1,75 @@
+package com.example.watdagam
+
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import com.example.watdagam.fragments.ListFragment
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.example.watdagam.databinding.ActivityMainBinding
+import com.example.watdagam.fragments.MyPageFragment
+import com.example.watdagam.fragments.PostFragment
+
+private const val TAG_LIST = "list_fragment"
+private const val TAG_POST = "post_fragment"
+private const val TAG_MY_PAGE = "my_page_fragment"
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setFragment(TAG_LIST, ListFragment())
+
+        binding.navigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.listFragment -> setFragment(TAG_LIST, ListFragment())
+                R.id.postFragment -> setFragment(TAG_POST, PostFragment())
+                R.id.myPageFragment -> setFragment(TAG_MY_PAGE, MyPageFragment())
+            }
+            true
+        }
+    }
+
+    private fun setFragment(tag: String, fragment: Fragment) {
+        val manager: FragmentManager = supportFragmentManager
+        val fragTransction = manager.beginTransaction()
+
+        if (manager.findFragmentByTag(tag) == null) {
+            fragTransction.add(R.id.mainFrameLayout, fragment, tag)
+        }
+
+        val list = manager.findFragmentByTag(TAG_LIST)
+        val post = manager.findFragmentByTag(TAG_POST)
+        val myPage = manager.findFragmentByTag(TAG_MY_PAGE)
+
+        if (list != null) {
+            fragTransction.hide(list)
+        }
+        if (post != null) {
+            fragTransction.hide(post)
+        }
+        if (myPage != null) {
+            fragTransction.hide(myPage)
+        }
+
+        when (tag) {
+            TAG_LIST -> {
+                if (list != null)
+                    fragTransction.show(list)
+            }
+            TAG_POST -> {
+                if (post != null)
+                    fragTransction.show(post)
+            }
+            TAG_MY_PAGE -> {
+                if (myPage != null)
+                    fragTransction.show(myPage)
+
+            }
+        }
+        fragTransction.commitAllowingStateLoss()
+    }
+}
