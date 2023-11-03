@@ -13,7 +13,6 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import com.example.watdagam.api.ApiService
 import com.example.watdagam.api.KakaoService
-import retrofit2.Call
 import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
@@ -43,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
         loginButtonKakao.setOnClickListener {
             val kakaoService = KakaoService.getInstance(this)
             kakaoService.login(
-                onSuccess = { accessToken: String -> onKakaoLoginSuccess(accessToken) },
+                onSuccess = { accessToken -> onKakaoLoginSuccess(accessToken) },
                 onFailure = { -> onKakaoLoginFailure() },
             )
         }
@@ -54,8 +53,8 @@ class LoginActivity : AppCompatActivity() {
         apiService.login(
             "KAKAO",
             accessToken,
-            onSuccess = { _: Call<Void>, response: Response<Void> -> onWDGLoginSuccess(response) },
-            onFailure = { _: Call<Void>, _: Throwable -> onWDGLoginFailure() },
+            onSuccess = { _, response -> onWDGLoginSuccess(response) },
+            onFailure = { _, _ -> onWDGLoginFailure() },
         )
     }
 
@@ -72,7 +71,7 @@ class LoginActivity : AppCompatActivity() {
             when (response.code()) {
                 200 -> {
                     // Move to list page
-                    val intent = Intent(this@LoginActivity, ListActivity::class.java)
+                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     startActivity(intent)
                 }
 

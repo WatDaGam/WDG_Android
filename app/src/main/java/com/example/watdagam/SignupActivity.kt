@@ -90,21 +90,6 @@ class SignupActivity: AppCompatActivity() {
 
     }
 
-//    override fun getOnBackInvokedDispatcher(): OnBackInvokedDispatcher {
-//        val builder = AlertDialog.Builder(this)
-//        builder
-//            .setTitle("페이지를 벗어나면 회원가입이 취소됩니다.")
-//            .setMessage("뒤로가시겠습니끼?")
-//            .setPositiveButton("네") { _, _ ->
-//                val intent = Intent(this, LoginActivity::class.java)
-//                startActivity(intent)
-//            }
-//            .setNegativeButton("아니요", null)
-//        val dialog = builder.create()
-//        dialog.show()
-//        return super.getOnBackInvokedDispatcher()
-//    }
-
     private fun setStatusInfo() {
         checked = false
         notiText.setCompoundDrawablesRelative(AppCompatResources.getDrawable(this, R.drawable.icon_info), null, null, null)
@@ -151,7 +136,7 @@ class SignupActivity: AppCompatActivity() {
     private fun onSetNicknameSuccess(response: Response<Void>) {
         when (response.code()) {
             200 -> {
-                val intent = Intent(this, ListActivity::class.java)
+                val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
             }
             400 -> {
