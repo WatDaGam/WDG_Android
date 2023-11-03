@@ -13,7 +13,6 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import com.example.watdagam.api.ApiService
 import com.example.watdagam.api.KakaoService
-import com.kakao.sdk.common.KakaoSdk
 import retrofit2.Call
 import retrofit2.Response
 
@@ -30,9 +29,6 @@ class LoginActivity : AppCompatActivity() {
         logo = this.findViewById(R.id.logo)
         containerLoginButtons = this.findViewById(R.id.container_login_buttons)
         loginButtonKakao = this.findViewById(R.id.login_button_kakao)
-
-        // Kakao SDK 초기화
-        KakaoSdk.init(this, "27c267b47e61135cd098eb3fc9270bc6")
 
         AnimatorSet().apply {
             play(ObjectAnimator.ofFloat(logo, "translationY", -300f).apply {

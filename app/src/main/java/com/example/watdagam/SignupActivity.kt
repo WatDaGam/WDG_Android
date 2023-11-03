@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatButton
@@ -24,9 +25,21 @@ class SignupActivity: AppCompatActivity() {
     private lateinit var buttonSubmit: AppCompatButton
     private var checked: Boolean = false
 
+    private var backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            val builder = AlertDialog.Builder(this@SignupActivity)
+                .setMessage("회원가입 정보가 삭제됩니다. 그래도 뒤로 가시겠습니까?")
+                .setPositiveButton("네") {_, _ -> finish()}
+                .setNegativeButton("아니오", null)
+            val dialog = builder.create()
+            dialog.show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
+        this.onBackPressedDispatcher.addCallback(this, backPressedCallback)
 
         nicknameEditText = this.findViewById(R.id.nickname)
         notiText = this.findViewById(R.id.nickname_noti_text)
@@ -43,15 +56,8 @@ class SignupActivity: AppCompatActivity() {
         })
 
         buttonCancel.setOnClickListener {
-            this.moveTaskToBack(true)
+            this.onBackPressedDispatcher.onBackPressed()
         }
-
-        this.onBackPressedDispatcher.addCallback(this /* lifecycle owner */, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                // Back is pressed... Finishing the activity
-                Toast.makeText(this@SignupActivity, "뒤로가기", Toast.LENGTH_SHORT).show()
-            }
-        })
 
         buttonSubmit.setOnClickListener {
             val nickname = nicknameEditText.text.toString()
@@ -83,6 +89,21 @@ class SignupActivity: AppCompatActivity() {
         }
 
     }
+
+//    override fun getOnBackInvokedDispatcher(): OnBackInvokedDispatcher {
+//        val builder = AlertDialog.Builder(this)
+//        builder
+//            .setTitle("페이지를 벗어나면 회원가입이 취소됩니다.")
+//            .setMessage("뒤로가시겠습니끼?")
+//            .setPositiveButton("네") { _, _ ->
+//                val intent = Intent(this, LoginActivity::class.java)
+//                startActivity(intent)
+//            }
+//            .setNegativeButton("아니요", null)
+//        val dialog = builder.create()
+//        dialog.show()
+//        return super.getOnBackInvokedDispatcher()
+//    }
 
     private fun setStatusInfo() {
         checked = false
