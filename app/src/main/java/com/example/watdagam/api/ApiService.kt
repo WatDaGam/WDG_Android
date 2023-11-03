@@ -10,8 +10,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 class ApiService private constructor() {
@@ -51,22 +53,32 @@ class ApiService private constructor() {
             @Header("Refresh-Token") token: String,
         ): Call<Void>
 
-//        @POST("checkNickname")
-//        fun checkNickname(
-//            @Header("Authorization") token: String,
-//            @Body nickname: String,
-//        ): Call<Void>
-//
-//        @POST("setNickname")
-//        fun setNickname(
-//            @Header("Authorization") token: String,
-//            @Body nickname: String,
-//        ): Call<Void>
-//
+        @POST("nickname/check")
+        fun checkNickname(
+            @Header("Authorization") token: String,
+            @Body nickname: String,
+        ): Call<Void>
+
+        @POST("nickname/set")
+        fun setNickname(
+            @Header("Authorization") token: String,
+            @Body nickname: String,
+        ): Call<Void>
+
 //        @DELETE("withdrawal")
 //        fun withdrawal(
 //            @Header("Authorization") token: String,
 //        ): Call<Void>
+    }
+
+    private fun requireLoginAgain() {
+        val intent = Intent(appContext, LoginActivity::class.java)
+        val builder: AlertDialog.Builder = AlertDialog.Builder(appContext)
+        builder
+            .setMessage("로그인 정보가 만료되었습니다. 다시 로그인해주세요")
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+        appContext.startActivity(intent)
     }
 
      fun login(
@@ -75,11 +87,11 @@ class ApiService private constructor() {
          onSuccess: (Call<Void>, Response<Void>) -> Unit,
          onFailure: (Call<Void>, Throwable) -> Unit,
     ) {
-        val response = apiService.login(
+        val request = apiService.login(
             platform,
             "Bearer $platformToken",
         )
-        response.enqueue(object: Callback<Void> {
+         request.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 Log.d(TAG, "로그인 요청 성공: ${response.code()} ${response.message()}")
                 if (response.isSuccessful) {
@@ -107,22 +119,13 @@ class ApiService private constructor() {
     private fun refreshToken(
         onSuccess: () -> Unit
     ) {
-        fun requireLoginAgain() {
-            val intent = Intent(appContext, LoginActivity::class.java)
-            val builder: AlertDialog.Builder = AlertDialog.Builder(appContext)
-            builder
-                .setMessage("로그인 정보가 만료되었습니다. 다시 로그인해주세요")
-            val dialog: AlertDialog = builder.create()
-            dialog.show()
-            appContext.startActivity(intent)
-        }
         if (token_pref.refreshTokenExpirationTime - System.currentTimeMillis() < 10_000) { // 10초도 안남은 경우
             requireLoginAgain()
         }
-        val response = apiService.refreshToken(token_pref.refreshToken ?: "")
-        response.enqueue(object: Callback<Void> {
+        val request = apiService.refreshToken(token_pref.refreshToken ?: "")
+        request.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                Log.d(TAG, "토큰 요청 갱신 성공")
+                Log.d(TAG, "토큰 요청 갱신 성공: ${response.code()} ${response.message()}")
                 if (response.isSuccessful) {
                     val accessToken = response.headers()["Authorization"].toString().split(" ")[1]
                     val accessTokenExpTime = response.headers()["access-expiration-time"].toString().toLong()
@@ -138,6 +141,70 @@ class ApiService private constructor() {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e(TAG, "토큰 갱신 요청 실패")
                 requireLoginAgain()
+            }
+        })
+    }
+
+    fun checkNickname(
+        nickname: String,
+        onSuccess: (Call<Void>, Response<Void>) -> Unit,
+        onFailure: (Call<Void>, Throwable) -> Unit,
+        refreshWhenTokenExpired: Boolean = true
+    ) {
+        if (token_pref.accessTokenExpirationTime - System.currentTimeMillis() < 10_000) {
+            if (!refreshWhenTokenExpired) {
+                return
+            } else {
+                refreshToken {
+                    checkNickname(nickname, onSuccess, onFailure, false)
+                }
+            }
+        }
+        val request = apiService.checkNickname("Bearer ${token_pref.accessToken}", nickname)
+        request.enqueue(object: Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.d(TAG, "닉네임 확인 요청 성공: ${response.code()} ${response.message()}")
+                if (response.code() == 401) {
+                    requireLoginAgain()
+                }
+                onSuccess(call, response)
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e(TAG, "닉네임 확인 요청 실패")
+                onFailure(call, t)
+            }
+        })
+    }
+
+    fun setNickname(
+        nickname: String,
+        onSuccess: (Call<Void>, Response<Void>) -> Unit,
+        onFailure: (Call<Void>, Throwable) -> Unit,
+        refreshWhenTokenExpired: Boolean = true
+    ) {
+        if (token_pref.accessTokenExpirationTime - System.currentTimeMillis() < 10_000) {
+            if (!refreshWhenTokenExpired) {
+                return
+            } else {
+                refreshToken {
+                    setNickname(nickname, onSuccess, onFailure, false)
+                }
+            }
+        }
+        val request = apiService.setNickname("Bearer ${token_pref.accessToken}", nickname)
+        request.enqueue(object: Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.d(TAG, "닉네임 설정 요청 성공: ${response.code()} ${response.message()}")
+                if (response.code() == 401) {
+                    requireLoginAgain()
+                }
+                onSuccess(call, response)
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e(TAG, "닉네임 설정 요청 실패")
+                onFailure(call, t)
             }
         })
     }
