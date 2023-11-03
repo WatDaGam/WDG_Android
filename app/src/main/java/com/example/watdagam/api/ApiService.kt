@@ -80,8 +80,16 @@ class ApiService private constructor() {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 Log.d(TAG, "로그인 요청 성공: ${response.code()} ${response.message()}")
                 if (response.isSuccessful) {
-                    token_pref.accessToken = response.headers()["accessToken"]
-                    token_pref.refreshToken = response.headers()["refreshToken"]
+                    val accessToken = response.headers()["Authorization"].toString().split(" ")[1]
+                    val refreshToken = response.headers()["Refresh-Token"].toString()
+                    val accessTokenExpTime = response.headers()["access-expiration-time"].toString().toLong()
+                    val refreshTokenExpTime = response.headers()["refresh-expiration-time"].toString().toLong()
+                    Log.d(TAG, "access token: $accessToken expire in $accessTokenExpTime")
+                    Log.d(TAG, "refresh token: $refreshToken expire in $refreshTokenExpTime")
+                    token_pref.accessToken = accessToken
+                    token_pref.accessTokenExpirationTime = accessTokenExpTime
+                    token_pref.refreshToken = refreshToken
+                    token_pref.refreshTokenExpirationTime = refreshTokenExpTime
                 }
                 onSuccess(call, response)
             }
