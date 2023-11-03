@@ -1,7 +1,10 @@
 package com.example.watdagam.api
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.util.Log
+import com.example.watdagam.LoginActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -43,11 +46,11 @@ class ApiService private constructor() {
             @Header("Authorization") token: String,
         ): Call<Void>
 
-//        @GET("refreshAccessToken")
-//        fun refreshAccessToken(
-//            @Header("Authorization") token: String,
-//        ): Call<Void>
-//
+        @GET("refreshtoken")
+        fun refreshToken(
+            @Header("Refresh-Token") token: String,
+        ): Call<Void>
+
 //        @POST("checkNickname")
 //        fun checkNickname(
 //            @Header("Authorization") token: String,
@@ -97,6 +100,44 @@ class ApiService private constructor() {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e(TAG, "로그인 요청 실패")
                 onFailure(call, t)
+            }
+        })
+    }
+
+    private fun refreshToken(
+        onSuccess: () -> Unit
+    ) {
+        fun requireLoginAgain() {
+            val intent = Intent(appContext, LoginActivity::class.java)
+            val builder: AlertDialog.Builder = AlertDialog.Builder(appContext)
+            builder
+                .setMessage("로그인 정보가 만료되었습니다. 다시 로그인해주세요")
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
+            appContext.startActivity(intent)
+        }
+        if (token_pref.refreshTokenExpirationTime - System.currentTimeMillis() < 10_000) { // 10초도 안남은 경우
+            requireLoginAgain()
+        }
+        val response = apiService.refreshToken(token_pref.refreshToken ?: "")
+        response.enqueue(object: Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.d(TAG, "토큰 요청 갱신 성공")
+                if (response.isSuccessful) {
+                    val accessToken = response.headers()["Authorization"].toString().split(" ")[1]
+                    val accessTokenExpTime = response.headers()["access-expiration-time"].toString().toLong()
+                    Log.d(TAG, "access token: $accessToken expire in $accessTokenExpTime")
+                    token_pref.accessToken = accessToken
+                    token_pref.accessTokenExpirationTime = accessTokenExpTime
+                    onSuccess()
+                } else {
+                    requireLoginAgain()
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e(TAG, "토큰 갱신 요청 실패")
+                requireLoginAgain()
             }
         })
     }
