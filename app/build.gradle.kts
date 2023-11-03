@@ -33,6 +33,11 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    // 하단 네비게이션 바에 뷰 바인딩 적용
+    viewBinding {
+        enable = true
+    }
 }
 
 dependencies {
@@ -52,4 +57,7 @@ dependencies {
     // retrofit HTTP 통신
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // 뷰 바인딩
+    implementation("androidx.compose.ui:ui-viewbinding:1.5.4")
 }
