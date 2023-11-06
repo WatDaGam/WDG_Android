@@ -15,4 +15,7 @@
     <string name="navigation_title_post">글쓰기</string>
     <string name="navigation_title_my_page">마이페이지</string>
 
+    <string name="menu_item_logout">로그아웃</string>
+    <string name="menu_item_withdrawal">회원탈퇴</string>
+
 </resources>
