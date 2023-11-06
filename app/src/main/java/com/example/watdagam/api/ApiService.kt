@@ -20,7 +20,7 @@ class ApiService private constructor() {
     companion object {
         private var instance: ApiService? = null
         private lateinit var appContext: Context
-        private lateinit var token_pref: TokenSharedPreference
+        lateinit var token_pref: TokenSharedPreference
 
         private const val TAG = "WDG_API"
         private const val BASE_URL: String = "http://52.78.126.48:8080"
@@ -39,6 +39,13 @@ class ApiService private constructor() {
             }
         }
 
+        fun clearUserData() {
+            token_pref.accessToken = ""
+            token_pref.accessTokenExpirationTime = 0
+            token_pref.refreshToken = ""
+            token_pref.refreshTokenExpirationTime = 0
+            Log.d("TOKEN", "all uset data cleared because logout")
+        }
     }
 
     interface WDGApiService {

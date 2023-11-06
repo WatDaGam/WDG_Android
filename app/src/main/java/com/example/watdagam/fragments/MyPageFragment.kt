@@ -1,5 +1,6 @@
 package com.example.watdagam.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,7 +8,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import com.example.watdagam.LoginActivity
 import com.example.watdagam.R
+import com.example.watdagam.api.ApiService
 import com.example.watdagam.databinding.FragmentMyPageBinding
 
 class MyPageFragment : Fragment() {
@@ -31,7 +34,10 @@ class MyPageFragment : Fragment() {
         viewBinding.toolbar.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.logoutButton -> {
-                    TODO("call api")
+                    ApiService.clearUserData()
+                    val intent = Intent(requireContext(), LoginActivity::class.java)
+                    startActivity(intent)
+                    true
                 }
                 R.id.withdrawalButton -> {
                     TODO("call api")
