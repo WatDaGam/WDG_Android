@@ -11,6 +11,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -72,10 +73,10 @@ class ApiService private constructor() {
             @Body nickname: String,
         ): Call<Void>
 
-//        @DELETE("withdrawal")
-//        fun withdrawal(
-//            @Header("Authorization") token: String,
-//        ): Call<Void>
+        @DELETE("withdrawal")
+        fun withdrawal(
+            @Header("Authorization") token: String,
+        ): Call<Void>
     }
 
     private fun requireLoginAgain() {
@@ -211,6 +212,37 @@ class ApiService private constructor() {
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e(TAG, "닉네임 설정 요청 실패")
+                onFailure(call, t)
+            }
+        })
+    }
+
+    fun withdrawal(
+        onSuccess: (Call<Void>, Response<Void>) -> Unit,
+        onFailure: (Call<Void>, Throwable) -> Unit,
+        refreshWhenTokenExpired: Boolean = true
+    ) {
+        if (token_pref.accessTokenExpirationTime - System.currentTimeMillis() < 10_000) {
+            if (!refreshWhenTokenExpired) {
+                return
+            } else {
+                refreshToken {
+                    withdrawal(onSuccess, onFailure, false)
+                }
+            }
+        }
+        val request = apiService.withdrawal("Bearer ${token_pref.accessToken}")
+        request.enqueue(object: Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                Log.d(TAG, "회원 탈퇴 요청 성공: ${response.code()} ${response.message()}")
+                if (response.isSuccessful) {
+                    clearUserData()
+                }
+                onSuccess(call, response)
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e(TAG, "회원 탈퇴 요청 실패")
                 onFailure(call, t)
             }
         })
