@@ -18,4 +18,10 @@
     <string name="menu_item_logout">로그아웃</string>
     <string name="menu_item_withdrawal">회원탈퇴</string>
 
+    <string name="profile_post">남긴 글</string>
+    <string name="profile_like">좋아요</string>
+
+    <string name="tag_my_post">내가 남긴 글</string>
+    <string name="tag_my_like">좋아요 누른 글</string>
+
 </resources>
