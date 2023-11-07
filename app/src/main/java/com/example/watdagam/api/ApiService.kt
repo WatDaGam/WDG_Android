@@ -22,6 +22,7 @@ class ApiService private constructor() {
         private var instance: ApiService? = null
         private lateinit var appContext: Context
         lateinit var token_pref: TokenSharedPreference
+        lateinit var user_data_pref: UserDataSharedPreference
 
         private const val TAG = "WDG_API"
         private const val BASE_URL: String = "http://52.78.126.48:8080"
@@ -36,6 +37,7 @@ class ApiService private constructor() {
             return instance ?: ApiService().also {
                 appContext = context.applicationContext
                 token_pref = TokenSharedPreference(appContext)
+                user_data_pref = UserDataSharedPreference(appContext)
                 instance = it
             }
         }
@@ -109,10 +111,8 @@ class ApiService private constructor() {
                     val refreshTokenExpTime = response.headers()["refresh-expiration-time"].toString().toLong()
                     Log.d(TAG, "access token: $accessToken expire in $accessTokenExpTime")
                     Log.d(TAG, "refresh token: $refreshToken expire in $refreshTokenExpTime")
-                    token_pref.accessToken = accessToken
-                    token_pref.accessTokenExpirationTime = accessTokenExpTime
-                    token_pref.refreshToken = refreshToken
-                    token_pref.refreshTokenExpirationTime = refreshTokenExpTime
+                    token_pref.setAccessToken(accessToken, accessTokenExpTime)
+                    token_pref.setRefreshToken(refreshToken, refreshTokenExpTime)
                 }
                 onSuccess(call, response)
             }
@@ -124,13 +124,14 @@ class ApiService private constructor() {
         })
     }
 
-    private fun refreshToken(
+    private fun refreshAccessToken(
         onSuccess: () -> Unit
     ) {
-        if (token_pref.refreshTokenExpirationTime - System.currentTimeMillis() < 10_000) { // 10초도 안남은 경우
+        val refreshToken = token_pref.getRefreshToken()
+        if (refreshToken.isEmpty()) {
             requireLoginAgain()
         }
-        val request = apiService.refreshToken(token_pref.refreshToken ?: "")
+        val request = apiService.refreshToken(refreshToken)
         request.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 Log.d(TAG, "토큰 요청 갱신 성공: ${response.code()} ${response.message()}")
@@ -138,8 +139,7 @@ class ApiService private constructor() {
                     val accessToken = response.headers()["Authorization"].toString().split(" ")[1]
                     val accessTokenExpTime = response.headers()["access-expiration-time"].toString().toLong()
                     Log.d(TAG, "access token: $accessToken expire in $accessTokenExpTime")
-                    token_pref.accessToken = accessToken
-                    token_pref.accessTokenExpirationTime = accessTokenExpTime
+                    token_pref.setAccessToken(accessToken, accessTokenExpTime)
                     onSuccess()
                 } else {
                     requireLoginAgain()
@@ -159,16 +159,17 @@ class ApiService private constructor() {
         onFailure: (Call<Void>, Throwable) -> Unit,
         refreshWhenTokenExpired: Boolean = true
     ) {
-        if (token_pref.accessTokenExpirationTime - System.currentTimeMillis() < 10_000) {
+        val accessToken = token_pref.getAccessToken()
+        if (accessToken.isEmpty()) {
             if (!refreshWhenTokenExpired) {
                 return
             } else {
-                refreshToken {
+                refreshAccessToken {
                     checkNickname(nickname, onSuccess, onFailure, false)
                 }
             }
         }
-        val request = apiService.checkNickname("Bearer ${token_pref.accessToken}", nickname)
+        val request = apiService.checkNickname("Bearer $accessToken", nickname)
         request.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 Log.d(TAG, "닉네임 확인 요청 성공: ${response.code()} ${response.message()}")
@@ -177,7 +178,6 @@ class ApiService private constructor() {
                 }
                 onSuccess(call, response)
             }
-
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Log.e(TAG, "닉네임 확인 요청 실패")
                 onFailure(call, t)
@@ -191,16 +191,17 @@ class ApiService private constructor() {
         onFailure: (Call<Void>, Throwable) -> Unit,
         refreshWhenTokenExpired: Boolean = true
     ) {
-        if (token_pref.accessTokenExpirationTime - System.currentTimeMillis() < 10_000) {
+        val accessToken = token_pref.getAccessToken()
+        if (accessToken.isEmpty()) {
             if (!refreshWhenTokenExpired) {
                 return
             } else {
-                refreshToken {
+                refreshAccessToken {
                     setNickname(nickname, onSuccess, onFailure, false)
                 }
             }
         }
-        val request = apiService.setNickname("Bearer ${token_pref.accessToken}", nickname)
+        val request = apiService.setNickname("Bearer $accessToken", nickname)
         request.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 Log.d(TAG, "닉네임 설정 요청 성공: ${response.code()} ${response.message()}")
@@ -222,21 +223,23 @@ class ApiService private constructor() {
         onFailure: (Call<Void>, Throwable) -> Unit,
         refreshWhenTokenExpired: Boolean = true
     ) {
-        if (token_pref.accessTokenExpirationTime - System.currentTimeMillis() < 10_000) {
+        val accessToken = token_pref.getAccessToken()
+        if (accessToken.isEmpty()) {
             if (!refreshWhenTokenExpired) {
                 return
             } else {
-                refreshToken {
+                refreshAccessToken {
                     withdrawal(onSuccess, onFailure, false)
                 }
             }
         }
-        val request = apiService.withdrawal("Bearer ${token_pref.accessToken}")
+        val request = apiService.withdrawal("Bearer $accessToken")
         request.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 Log.d(TAG, "회원 탈퇴 요청 성공: ${response.code()} ${response.message()}")
                 if (response.isSuccessful) {
-                    clearUserData()
+                    token_pref.setAccessToken("", 0)
+                    token_pref.setRefreshToken("", 0)
                 }
                 onSuccess(call, response)
             }
