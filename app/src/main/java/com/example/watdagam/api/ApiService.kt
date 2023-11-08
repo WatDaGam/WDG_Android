@@ -26,12 +26,12 @@ class ApiService private constructor() {
 
         private const val TAG = "WDG_API"
         private const val BASE_URL: String = "http://52.78.126.48:8080"
-//        private const val BASE_URL: String = "https://0b88436b-a8a0-463a-bb4d-07b31d747be2.mock.pstmn.io"
         private val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        private val apiService: WDGApiService = retrofit.create(WDGApiService::class.java)
+        private val loginService: LoginService = retrofit.create(LoginService::class.java)
+        private val userService: UserService = retrofit.create(UserService::class.java)
 
         fun getInstance(context: Context): ApiService {
             return instance ?: ApiService().also {
@@ -41,17 +41,9 @@ class ApiService private constructor() {
                 instance = it
             }
         }
-
-        fun clearUserData() {
-            token_pref.accessToken = ""
-            token_pref.accessTokenExpirationTime = 0
-            token_pref.refreshToken = ""
-            token_pref.refreshTokenExpirationTime = 0
-            Log.d("TOKEN", "all uset data cleared because logout")
-        }
     }
 
-    interface WDGApiService {
+    interface LoginService {
         @GET("login")
         fun login(
             @Query("platform") platform: String,
@@ -59,29 +51,17 @@ class ApiService private constructor() {
         ): Call<Void>
 
         @GET("refreshtoken")
-        fun refreshToken(
-            @Header("Refresh-Token") token: String,
-        ): Call<Void>
-
-        @POST("nickname/check")
-        fun checkNickname(
+        suspend fun refreshToken(
             @Header("Authorization") token: String,
-            @Body nickname: String,
-        ): Call<Void>
+        ): Response<Void>
 
-        @POST("nickname/set")
-        fun setNickname(
-            @Header("Authorization") token: String,
-            @Body nickname: String,
-        ): Call<Void>
-
-        @DELETE("withdrawal")
+        @GET("withdrawal")
         fun withdrawal(
             @Header("Authorization") token: String,
         ): Call<Void>
     }
 
-    private fun requireLoginAgain() {
+    private fun requestLogin() {
         val intent = Intent(appContext, LoginActivity::class.java)
         val builder: AlertDialog.Builder = AlertDialog.Builder(appContext)
         builder
@@ -97,20 +77,18 @@ class ApiService private constructor() {
          onSuccess: (Call<Void>, Response<Void>) -> Unit,
          onFailure: (Call<Void>, Throwable) -> Unit,
     ) {
-        val request = apiService.login(
+        val request = loginService.login(
             platform,
             "Bearer $platformToken",
         )
          request.enqueue(object: Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                Log.d(TAG, "로그인 요청 성공: ${response.code()} ${response.message()}")
+                Log.d(TAG, "요청 성공 (login) ${response.code()} ${response.message()}")
                 if (response.isSuccessful) {
                     val accessToken = response.headers()["Authorization"].toString().split(" ")[1]
                     val refreshToken = response.headers()["Refresh-Token"].toString()
                     val accessTokenExpTime = response.headers()["access-expiration-time"].toString().toLong()
                     val refreshTokenExpTime = response.headers()["refresh-expiration-time"].toString().toLong()
-                    Log.d(TAG, "access token: $accessToken expire in $accessTokenExpTime")
-                    Log.d(TAG, "refresh token: $refreshToken expire in $refreshTokenExpTime")
                     token_pref.setAccessToken(accessToken, accessTokenExpTime)
                     token_pref.setRefreshToken(refreshToken, refreshTokenExpTime)
                 }
@@ -118,125 +96,55 @@ class ApiService private constructor() {
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e(TAG, "로그인 요청 실패")
+                Log.e(TAG, "요청 실패 (login)")
                 onFailure(call, t)
             }
         })
     }
 
-    private fun refreshAccessToken(
-        onSuccess: () -> Unit
-    ) {
-        val refreshToken = token_pref.getRefreshToken()
-        if (refreshToken.isEmpty()) {
-            requireLoginAgain()
-        }
-        val request = apiService.refreshToken(refreshToken)
-        request.enqueue(object: Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                Log.d(TAG, "토큰 요청 갱신 성공: ${response.code()} ${response.message()}")
-                if (response.isSuccessful) {
+    suspend fun getAccessToken(): Result<String> = kotlin.runCatching {
+        val cachedAccessToken = token_pref.getAccessToken()
+        if (cachedAccessToken.isNotEmpty()) {
+            cachedAccessToken
+        } else {
+            val cachedRefreshToken = token_pref.getRefreshToken()
+            if (cachedRefreshToken.isEmpty()) {
+                requestLogin()
+                throw RuntimeException("login required")
+            }
+            val response = loginService.refreshToken("Bearer $cachedRefreshToken")
+            when (response.code()) {
+                200 -> {
                     val accessToken = response.headers()["Authorization"].toString().split(" ")[1]
-                    val accessTokenExpTime = response.headers()["access-expiration-time"].toString().toLong()
-                    Log.d(TAG, "access token: $accessToken expire in $accessTokenExpTime")
+                    val accessTokenExpTime =
+                        response.headers()["access-expiration-time"].toString().toLong()
                     token_pref.setAccessToken(accessToken, accessTokenExpTime)
-                    onSuccess()
-                } else {
-                    requireLoginAgain()
+                    accessToken
                 }
-            }
 
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e(TAG, "토큰 갱신 요청 실패")
-                requireLoginAgain()
-            }
-        })
-    }
+                401 -> {
+                    requestLogin()
+                    throw RuntimeException("login required")
+                }
 
-    fun checkNickname(
-        nickname: String,
-        onSuccess: (Call<Void>, Response<Void>) -> Unit,
-        onFailure: (Call<Void>, Throwable) -> Unit,
-        refreshWhenTokenExpired: Boolean = true
-    ) {
-        val accessToken = token_pref.getAccessToken()
-        if (accessToken.isEmpty()) {
-            if (!refreshWhenTokenExpired) {
-                return
-            } else {
-                refreshAccessToken {
-                    checkNickname(nickname, onSuccess, onFailure, false)
+                else -> {
+                    Log.e(TAG, "Unhandled response code (refreshtoken) ${response.code()}")
+                    Log.e(TAG, response.toString())
+                    throw RuntimeException("unhandled response code")
                 }
             }
         }
-        val request = apiService.checkNickname("Bearer $accessToken", nickname)
-        request.enqueue(object: Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                Log.d(TAG, "닉네임 확인 요청 성공: ${response.code()} ${response.message()}")
-                if (response.code() == 401) {
-                    requireLoginAgain()
-                }
-                onSuccess(call, response)
-            }
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e(TAG, "닉네임 확인 요청 실패")
-                onFailure(call, t)
-            }
-        })
     }
 
-    fun setNickname(
-        nickname: String,
+    suspend fun withdrawal(
         onSuccess: (Call<Void>, Response<Void>) -> Unit,
         onFailure: (Call<Void>, Throwable) -> Unit,
-        refreshWhenTokenExpired: Boolean = true
     ) {
-        val accessToken = token_pref.getAccessToken()
-        if (accessToken.isEmpty()) {
-            if (!refreshWhenTokenExpired) {
-                return
-            } else {
-                refreshAccessToken {
-                    setNickname(nickname, onSuccess, onFailure, false)
-                }
-            }
-        }
-        val request = apiService.setNickname("Bearer $accessToken", nickname)
-        request.enqueue(object: Callback<Void> {
+        val accessToken = getAccessToken()
+        val request = loginService.withdrawal("Bearer $accessToken")
+        request.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                Log.d(TAG, "닉네임 설정 요청 성공: ${response.code()} ${response.message()}")
-                if (response.code() == 401) {
-                    requireLoginAgain()
-                }
-                onSuccess(call, response)
-            }
-
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e(TAG, "닉네임 설정 요청 실패")
-                onFailure(call, t)
-            }
-        })
-    }
-
-    fun withdrawal(
-        onSuccess: (Call<Void>, Response<Void>) -> Unit,
-        onFailure: (Call<Void>, Throwable) -> Unit,
-        refreshWhenTokenExpired: Boolean = true
-    ) {
-        val accessToken = token_pref.getAccessToken()
-        if (accessToken.isEmpty()) {
-            if (!refreshWhenTokenExpired) {
-                return
-            } else {
-                refreshAccessToken {
-                    withdrawal(onSuccess, onFailure, false)
-                }
-            }
-        }
-        val request = apiService.withdrawal("Bearer $accessToken")
-        request.enqueue(object: Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                Log.d(TAG, "회원 탈퇴 요청 성공: ${response.code()} ${response.message()}")
+                Log.d(TAG, "요청 성공 (withdrawal) ${response.code()} ${response.message()}")
                 if (response.isSuccessful) {
                     token_pref.setAccessToken("", 0)
                     token_pref.setRefreshToken("", 0)
@@ -245,9 +153,87 @@ class ApiService private constructor() {
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e(TAG, "회원 탈퇴 요청 실패")
+                Log.e(TAG, "요청 실패 (withdrawal)")
                 onFailure(call, t)
             }
         })
     }
+
+
+    interface UserService {
+        @POST("nickname/check")
+        fun checkNickname(
+            @Header("Authorization") token: String,
+            @Body nickname: String,
+        ): Call<Void>
+
+        @POST("nickname/set")
+        fun setNickname(
+            @Header("Authorization") token: String,
+            @Body nickname: String,
+        ): Call<Void>
+    }
+
+    suspend fun checkNickname(
+        nickname: String,
+        onSuccess: (Call<Void>, Response<Void>) -> Unit,
+        onFailure: (Call<Void>, Throwable) -> Unit,
+    ) {
+        getAccessToken()
+            .onSuccess {accessToken ->
+                val request = userService.checkNickname("Bearer $accessToken", nickname)
+                request.enqueue(object: Callback<Void> {
+                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                        Log.d(TAG, "요청 성공 (nickname/check) ${response.code()} ${response.message()}")
+                        if (response.code() == 401) {
+                            requestLogin()
+                        } else {
+                            onSuccess(call, response)
+                        }
+                    }
+                    override fun onFailure(call: Call<Void>, t: Throwable) {
+                        Log.e(TAG, "요청 실패 (nickname/check)")
+                        onFailure(call, t)
+                    }
+                })
+            }
+    }
+
+    suspend fun setNickname(
+        nickname: String,
+        onSuccess: (Call<Void>, Response<Void>) -> Unit,
+        onFailure: (Call<Void>, Throwable) -> Unit,
+    ) {
+        getAccessToken()
+            .onSuccess { accessToken ->
+                val request = userService.setNickname("Bearer $accessToken", nickname)
+                request.enqueue(object : Callback<Void> {
+                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                        Log.d(TAG, "요청 성공 (nickname/set) ${response.code()} ${response.message()}")
+                        if (response.code() == 401) {
+                            requestLogin()
+                        }
+                        if (response.isSuccessful) {
+                            val newAccessToken =
+                                response.headers()["Authorization"].toString().split(" ")[1]
+                            val newRefreshToken = response.headers()["Refresh-Token"].toString()
+                            val newAccessTokenExpTime =
+                                response.headers()["access-expiration-time"].toString().toLong()
+                            val newRefreshTokenExpTime =
+                                response.headers()["refresh-expiration-time"].toString().toLong()
+                            token_pref.setAccessToken(newAccessToken, newAccessTokenExpTime)
+                            token_pref.setRefreshToken(newRefreshToken, newRefreshTokenExpTime)
+                        }
+                        onSuccess(call, response)
+                    }
+
+                    override fun onFailure(call: Call<Void>, t: Throwable) {
+                        Log.e(TAG, "요청 실패 (nickname/set)")
+                        onFailure(call, t)
+                    }
+                })
+            }
+    }
+
+
 }
