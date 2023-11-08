@@ -2,6 +2,7 @@ package com.example.watdagam.api
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 
 class TokenSharedPreference(context: Context) {
 
@@ -11,47 +12,53 @@ class TokenSharedPreference(context: Context) {
         private const val KEY_ACCESS_TOKEN_EXPIRATION_TIME = "access-token-expiration-time"
         private const val KEY_REFRESH_TOKEN = "refresh-token"
         private const val KEY_REFRESH_TOKEN_EXPIRATION_TIME = "refresh-token-expiration-time"
+
+        private const val TAG = "TOKEN"
     }
     private val preferences: SharedPreferences = context.getSharedPreferences(PREFERENCE_FILENAME,0)
 
-    private var accessToken: String?
+    private var _accessToken: String?
         get() = preferences.getString(KEY_ACCESS_TOKEN, "")
         set(value) = preferences.edit().putString(KEY_ACCESS_TOKEN, value).apply()
 
-    private var accessTokenExpirationTime: Long
+    private var _accessTokenExpirationTime: Long
         get() = preferences.getLong(KEY_ACCESS_TOKEN_EXPIRATION_TIME, 0)
         set(value) = preferences.edit().putLong(KEY_ACCESS_TOKEN_EXPIRATION_TIME, value).apply()
 
-    private var refreshToken: String?
+    private var _refreshToken: String?
         get() = preferences.getString(KEY_REFRESH_TOKEN, "")
         set(value) = preferences.edit().putString(KEY_REFRESH_TOKEN, value).apply()
 
-    private var refreshTokenExpirationTime: Long
+    private var _refreshTokenExpirationTime: Long
         get() = preferences.getLong(KEY_REFRESH_TOKEN_EXPIRATION_TIME, 0)
         set(value) = preferences.edit().putLong(KEY_REFRESH_TOKEN_EXPIRATION_TIME, value).apply()
 
     fun getAccessToken(): String {
-        if (accessTokenExpirationTime - System.currentTimeMillis() < 10_000) {
-            accessToken = ""
-            accessTokenExpirationTime = 0
+        if (_accessTokenExpirationTime - System.currentTimeMillis() < 10_000) {
+            _accessToken = ""
+            _accessTokenExpirationTime = 0
+            Log.d(TAG, "access token expired")
         }
-        return accessToken?: ""
+        return _accessToken?: ""
     }
     fun setAccessToken(token: String, expTime: Long) {
-        accessToken = token
-        accessTokenExpirationTime = expTime
+        _accessToken = token
+        _accessTokenExpirationTime = expTime
+        Log.d(TAG, "access token: $token expire at $expTime")
     }
 
     fun getRefreshToken(): String {
-        if (refreshTokenExpirationTime - System.currentTimeMillis() < 10_000) {
-            refreshToken = ""
-            refreshTokenExpirationTime = 0
+        if (_refreshTokenExpirationTime - System.currentTimeMillis() < 10_000) {
+            _refreshToken = ""
+            _refreshTokenExpirationTime = 0
+            Log.d(TAG, "refresh token expired")
         }
-        return refreshToken?: ""
+        return _refreshToken?: ""
     }
 
     fun setRefreshToken(token: String, expTime: Long) {
-        refreshToken = token
-        refreshTokenExpirationTime = expTime
+        _refreshToken = token
+        _refreshTokenExpirationTime = expTime
+        Log.d(TAG, "refresh token: $token expire at $expTime")
     }
 }
