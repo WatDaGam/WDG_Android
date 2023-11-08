@@ -52,10 +52,10 @@ class ApiService private constructor() {
 
         @GET("refreshtoken")
         suspend fun refreshToken(
-            @Header("Authorization") token: String,
+            @Header("Refresh-Token") token: String,
         ): Response<Void>
 
-        @GET("withdrawal")
+        @DELETE("withdrawal")
         fun withdrawal(
             @Header("Authorization") token: String,
         ): Call<Void>
@@ -112,7 +112,7 @@ class ApiService private constructor() {
                 requestLogin()
                 throw RuntimeException("login required")
             }
-            val response = loginService.refreshToken("Bearer $cachedRefreshToken")
+            val response = loginService.refreshToken(cachedRefreshToken)
             when (response.code()) {
                 200 -> {
                     val accessToken = response.headers()["Authorization"].toString().split(" ")[1]
