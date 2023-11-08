@@ -60,4 +60,12 @@ dependencies {
 
     // 뷰 바인딩
     implementation("androidx.compose.ui:ui-viewbinding:1.5.4")
+
+    // 코루틴
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation("androidx.activity:activity-ktx:1.8.0")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
 }

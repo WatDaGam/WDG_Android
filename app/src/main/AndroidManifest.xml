@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SignupActivity"
+            android:name=".Signup.SignupActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
