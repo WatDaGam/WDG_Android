@@ -1,8 +1,9 @@
 package com.example.watdagam.api
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 class TokenSharedPreference(context: Context) {
 
@@ -15,23 +16,32 @@ class TokenSharedPreference(context: Context) {
 
         private const val TAG = "WDG_TOKEN"
     }
-    private val preferences: SharedPreferences = context.getSharedPreferences(PREFERENCE_FILENAME,Context.MODE_PRIVATE)
+    private val masterKey = MasterKey.Builder(context, MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
+    private val pref = EncryptedSharedPreferences.create(
+        context,
+        PREFERENCE_FILENAME,
+        masterKey,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    )
 
     private var _accessToken: String?
-        get() = preferences.getString(KEY_ACCESS_TOKEN, "")
-        set(value) = preferences.edit().putString(KEY_ACCESS_TOKEN, value).apply()
+        get() = pref.getString(KEY_ACCESS_TOKEN, "")
+        set(value) = pref.edit().putString(KEY_ACCESS_TOKEN, value).apply()
 
     private var _accessTokenExpirationTime: Long
-        get() = preferences.getLong(KEY_ACCESS_TOKEN_EXPIRATION_TIME, 0)
-        set(value) = preferences.edit().putLong(KEY_ACCESS_TOKEN_EXPIRATION_TIME, value).apply()
+        get() = pref.getLong(KEY_ACCESS_TOKEN_EXPIRATION_TIME, 0)
+        set(value) = pref.edit().putLong(KEY_ACCESS_TOKEN_EXPIRATION_TIME, value).apply()
 
     private var _refreshToken: String?
-        get() = preferences.getString(KEY_REFRESH_TOKEN, "")
-        set(value) = preferences.edit().putString(KEY_REFRESH_TOKEN, value).apply()
+        get() = pref.getString(KEY_REFRESH_TOKEN, "")
+        set(value) = pref.edit().putString(KEY_REFRESH_TOKEN, value).apply()
 
     private var _refreshTokenExpirationTime: Long
-        get() = preferences.getLong(KEY_REFRESH_TOKEN_EXPIRATION_TIME, 0)
-        set(value) = preferences.edit().putLong(KEY_REFRESH_TOKEN_EXPIRATION_TIME, value).apply()
+        get() = pref.getLong(KEY_REFRESH_TOKEN_EXPIRATION_TIME, 0)
+        set(value) = pref.edit().putLong(KEY_REFRESH_TOKEN_EXPIRATION_TIME, value).apply()
 
     fun getAccessToken(): String {
         if (_accessTokenExpirationTime - System.currentTimeMillis() < 10_000) {
