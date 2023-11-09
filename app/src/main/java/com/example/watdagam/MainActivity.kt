@@ -2,7 +2,7 @@ package com.example.watdagam
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.watdagam.fragments.ListFragment
+import com.example.watdagam.list.ListFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.watdagam.databinding.ActivityMainBinding
@@ -35,10 +35,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun setFragment(tag: String, fragment: Fragment) {
         val manager: FragmentManager = supportFragmentManager
-        val fragTransction = manager.beginTransaction()
+        val fragTransaction = manager.beginTransaction()
 
         if (manager.findFragmentByTag(tag) == null) {
-            fragTransction.add(R.id.mainFrameLayout, fragment, tag)
+            fragTransaction.add(R.id.mainFrameLayout, fragment, tag)
         }
 
         val list = manager.findFragmentByTag(TAG_LIST)
@@ -46,30 +46,30 @@ class MainActivity : AppCompatActivity() {
         val myPage = manager.findFragmentByTag(TAG_MY_PAGE)
 
         if (list != null) {
-            fragTransction.hide(list)
+            fragTransaction.hide(list)
         }
         if (post != null) {
-            fragTransction.hide(post)
+            fragTransaction.hide(post)
         }
         if (myPage != null) {
-            fragTransction.hide(myPage)
+            fragTransaction.hide(myPage)
         }
 
         when (tag) {
             TAG_LIST -> {
                 if (list != null)
-                    fragTransction.show(list)
+                    fragTransaction.show(list)
             }
             TAG_POST -> {
                 if (post != null)
-                    fragTransction.show(post)
+                    fragTransaction.show(post)
             }
             TAG_MY_PAGE -> {
                 if (myPage != null)
-                    fragTransction.show(myPage)
+                    fragTransaction.show(myPage)
 
             }
         }
-        fragTransction.commitAllowingStateLoss()
+        fragTransaction.commitAllowingStateLoss()
     }
 }
