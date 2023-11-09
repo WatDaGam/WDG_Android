@@ -1,14 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".list.ListFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="list fragment" />
+        android:layout_height="80dp"
+        android:background="@color/toolbar_background">
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="start"
+            android:src="@drawable/wdg_logo_black"
+            android:contentDescription="@string/app_name"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/toolbar_place_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="서초동"
+                android:textSize="20sp"
+                android:textColor="@color/toolbar_content"/>
+            <TextView
+                android:id="@+id/toolbar_gps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="41.40338 2.17403"
+                android:textSize="12sp"
+                android:textColor="@color/toolbar_content"/>
+        </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
 
-</FrameLayout>
+</LinearLayout>
