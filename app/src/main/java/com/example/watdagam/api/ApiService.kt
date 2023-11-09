@@ -17,6 +17,11 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
 
+data class UserInfo (
+    val nickname: String,
+    val post: Int,
+    val likes: Int,
+)
 class ApiService private constructor() {
     companion object {
         private var instance: ApiService? = null
@@ -171,6 +176,11 @@ class ApiService private constructor() {
             @Header("Authorization") token: String,
             @Body nickname: String,
         ): Call<Void>
+
+        @GET("userinfo")
+        suspend fun userinfo(
+            @Header("Authorization") token: String,
+        ): Response<UserInfo>
     }
 
     suspend fun checkNickname(
@@ -236,5 +246,18 @@ class ApiService private constructor() {
             }
     }
 
+    suspend fun getUserInfo(context: Context): UserInfo {
+        val accessToken = getAccessToken(context).getOrNull()?: ""
+        val response = userService.userinfo("Bearer $accessToken")
+        Log.d(TAG, "[request/userinfo] Bearer $accessToken")
+        Log.d(TAG, "[response/userinfo] ${response.code()} ${response.message()}")
+        if (response.isSuccessful) {
+            return response.body()!!
+        } else if (response.code() == 401){
+            requestLogin(context)
+            throw RuntimeException("Invalid access token")
+        }
+        throw RuntimeException("Unhandled Code (userinfo) ${response.code()}")
+    }
 
 }
