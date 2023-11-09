@@ -13,9 +13,9 @@ class TokenSharedPreference(context: Context) {
         private const val KEY_REFRESH_TOKEN = "refresh-token"
         private const val KEY_REFRESH_TOKEN_EXPIRATION_TIME = "refresh-token-expiration-time"
 
-        private const val TAG = "TOKEN"
+        private const val TAG = "WDG_TOKEN"
     }
-    private val preferences: SharedPreferences = context.getSharedPreferences(PREFERENCE_FILENAME,0)
+    private val preferences: SharedPreferences = context.getSharedPreferences(PREFERENCE_FILENAME,Context.MODE_PRIVATE)
 
     private var _accessToken: String?
         get() = preferences.getString(KEY_ACCESS_TOKEN, "")
