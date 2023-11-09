@@ -36,6 +36,9 @@ class MyPageFragmentViewModel: ViewModel() {
             try {
                 val apiService = ApiService.getInstance(context)
                 val updatedProfile = apiService.getUserInfo(context)
+                ApiService.user_data_pref.nickname = updatedProfile.nickname
+                ApiService.user_data_pref.posts = updatedProfile.post
+                ApiService.user_data_pref.likes = updatedProfile.likes
                 profile.value = updatedProfile
             } catch (e: RuntimeException) {
                 Log.e("WDG_MY_PAGE", e.message ?: "(no error message)")
