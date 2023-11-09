@@ -58,28 +58,15 @@ class MyPageFragmentViewModel: ViewModel() {
 
     fun withdraw(context: Context) {
         viewModelScope.launch {
-            val apiService = ApiService.getInstance(context)
-            apiService.withdrawal(
-                context,
-                onSuccess = { _, response ->
-                    when (response.code()) {
-                        200 -> {
-                            Toast.makeText(context, "회원 탈퇴 되었습니다.", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(context, LoginActivity::class.java)
-                            context.startActivity(intent)
-                        }
-                        400 -> {
-                            Toast.makeText(context, "로그인 정보가 만료되었습니다.", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(context, LoginActivity::class.java)
-                            context.startActivity(intent)
-                        }
-                        else -> {
-                            Log.e("WDG_API", "Unhandled Response code ${response.code()}")
-                        }
-                    }
-                },
-                onFailure = { _, _ ->  },
-            )
+            try {
+                val apiService = ApiService.getInstance(context)
+                apiService.withdrawal(context)
+                Toast.makeText(context, "회원 탈퇴 되었습니다.", Toast.LENGTH_SHORT).show()
+                val intent = Intent(context, LoginActivity::class.java)
+                context.startActivity(intent)
+            } catch (e: RuntimeException) {
+                Log.e("WDG_MY_PAGE", e.message ?: "(no error message)")
+            }
         }
     }
 }

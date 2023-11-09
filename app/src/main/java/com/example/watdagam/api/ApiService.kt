@@ -59,9 +59,9 @@ class ApiService private constructor() {
         ): Response<Void>
 
         @DELETE("withdrawal")
-        fun withdrawal(
+        suspend fun withdrawal(
             @Header("Authorization") token: String,
-        ): Call<Void>
+        ): Response<Void>
     }
 
     private fun requestLogin(context: Context) {
@@ -141,26 +141,17 @@ class ApiService private constructor() {
 
     suspend fun withdrawal(
         context: Context,
-        onSuccess: (Call<Void>, Response<Void>) -> Unit,
-        onFailure: (Call<Void>, Throwable) -> Unit,
     ) {
-        val accessToken = getAccessToken(context)
-        val request = loginService.withdrawal("Bearer $accessToken")
-        request.enqueue(object : Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                Log.d(TAG, "요청 성공 (withdrawal) ${response.code()} ${response.message()}")
-                if (response.isSuccessful) {
-                    token_pref.setAccessToken("", 0)
-                    token_pref.setRefreshToken("", 0)
-                }
-                onSuccess(call, response)
-            }
-
-            override fun onFailure(call: Call<Void>, t: Throwable) {
-                Log.e(TAG, "요청 실패 (withdrawal)")
-                onFailure(call, t)
-            }
-        })
+        val accessToken = getAccessToken(context).getOrNull()!!
+        val response = loginService.withdrawal("Bearer $accessToken")
+        Log.d(TAG, "[withdrawal] ${response.code()} ${response.message()}")
+        if (response.isSuccessful) {
+            return
+        } else if (response.code() == 401){
+            requestLogin(context)
+            throw RuntimeException("Invalid access token")
+        }
+        throw RuntimeException("Unhandled Code (userinfo) ${response.code()}")
     }
 
 
@@ -249,8 +240,7 @@ class ApiService private constructor() {
     suspend fun getUserInfo(context: Context): UserInfo {
         val accessToken = getAccessToken(context).getOrNull()?: ""
         val response = userService.userinfo("Bearer $accessToken")
-        Log.d(TAG, "[request/userinfo] Bearer $accessToken")
-        Log.d(TAG, "[response/userinfo] ${response.code()} ${response.message()}")
+        Log.d(TAG, "[userinfo] ${response.code()} ${response.message()}")
         if (response.isSuccessful) {
             return response.body()!!
         } else if (response.code() == 401){
