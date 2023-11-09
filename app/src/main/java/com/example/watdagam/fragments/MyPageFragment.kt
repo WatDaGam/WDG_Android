@@ -11,14 +11,17 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import com.example.watdagam.LoginActivity
 import com.example.watdagam.R
 import com.example.watdagam.api.ApiService
+import com.example.watdagam.api.UserDataSharedPreference
 import com.example.watdagam.databinding.FragmentMyPageBinding
 import retrofit2.Response
 
 class MyPageFragment : Fragment() {
     private lateinit var viewBinding: FragmentMyPageBinding
+    private lateinit var model: MyPageFragmentViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +32,15 @@ class MyPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         viewBinding = FragmentMyPageBinding.inflate(inflater, container, false)
+        model = ViewModelProvider(this)[MyPageFragmentViewModel::class.java]
+        model.getProfile().observe(viewLifecycleOwner) {profile ->
+            viewBinding.toolbarTitle.text = profile.nickname
+            viewBinding.profilePostsNumber.text = profile.post.toString()
+            viewBinding.profileLikesNumber.text = profile.likes.toString()
+        }
+
+        model.loadProfile(requireContext())
+
         // Title
         viewBinding.toolbarTitle.text = "MyPage"
 
@@ -38,7 +50,7 @@ class MyPageFragment : Fragment() {
         viewBinding.toolbar.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.logoutButton -> {
-                    ApiService.clearUserData()
+//                    ApiService.clearUserData()
                     val intent = Intent(requireContext(), LoginActivity::class.java)
                     startActivity(intent)
                     true
@@ -48,10 +60,10 @@ class MyPageFragment : Fragment() {
                         .setMessage("정말로 회원 탈퇴하시겠습니까?")
                         .setPositiveButton("네") { _, _ ->
                             val apiService = ApiService.getInstance(requireContext())
-                            apiService.withdrawal(
-                                onSuccess = {_, response -> onWithdrawalSuccess(response)},
-                                onFailure = {_, _ -> onWithdrawalFailure()},
-                            )
+//                            apiService.withdrawal(
+//                                onSuccess = {_, response -> onWithdrawalSuccess(response)},
+//                                onFailure = {_, _ -> onWithdrawalFailure()},
+//                            )
                         }
                         .setNegativeButton("아니요", null)
                     val dialog = builder.create()
