@@ -20,7 +20,6 @@ import retrofit2.http.Query
 class ApiService private constructor() {
     companion object {
         private var instance: ApiService? = null
-        private lateinit var appContext: Context
         lateinit var token_pref: TokenSharedPreference
         lateinit var user_data_pref: UserDataSharedPreference
 
@@ -33,11 +32,10 @@ class ApiService private constructor() {
         private val loginService: LoginService = retrofit.create(LoginService::class.java)
         private val userService: UserService = retrofit.create(UserService::class.java)
 
-        fun getInstance(context: Context): ApiService {
+        fun getInstance(applicationContext: Context): ApiService {
             return instance ?: ApiService().also {
-                appContext = context.applicationContext
-                token_pref = TokenSharedPreference(appContext)
-                user_data_pref = UserDataSharedPreference(appContext)
+                token_pref = TokenSharedPreference(applicationContext)
+                user_data_pref = UserDataSharedPreference(applicationContext)
                 instance = it
             }
         }
@@ -61,14 +59,14 @@ class ApiService private constructor() {
         ): Call<Void>
     }
 
-    private fun requestLogin() {
-        val intent = Intent(appContext, LoginActivity::class.java)
-        val builder: AlertDialog.Builder = AlertDialog.Builder(appContext)
+    private fun requestLogin(context: Context) {
+        val intent = Intent(context, LoginActivity::class.java)
+        val builder: AlertDialog.Builder = AlertDialog.Builder(context)
         builder
             .setMessage("로그인 정보가 만료되었습니다. 다시 로그인해주세요")
         val dialog: AlertDialog = builder.create()
         dialog.show()
-        appContext.startActivity(intent)
+        context.startActivity(intent)
     }
 
      fun login(
@@ -102,14 +100,14 @@ class ApiService private constructor() {
         })
     }
 
-    suspend fun getAccessToken(): Result<String> = kotlin.runCatching {
+    suspend fun getAccessToken(context: Context): Result<String> = kotlin.runCatching {
         val cachedAccessToken = token_pref.getAccessToken()
         if (cachedAccessToken.isNotEmpty()) {
             cachedAccessToken
         } else {
             val cachedRefreshToken = token_pref.getRefreshToken()
             if (cachedRefreshToken.isEmpty()) {
-                requestLogin()
+                requestLogin(context)
                 throw RuntimeException("login required")
             }
             val response = loginService.refreshToken(cachedRefreshToken)
@@ -123,7 +121,7 @@ class ApiService private constructor() {
                 }
 
                 401 -> {
-                    requestLogin()
+                    requestLogin(context)
                     throw RuntimeException("login required")
                 }
 
@@ -137,10 +135,11 @@ class ApiService private constructor() {
     }
 
     suspend fun withdrawal(
+        context: Context,
         onSuccess: (Call<Void>, Response<Void>) -> Unit,
         onFailure: (Call<Void>, Throwable) -> Unit,
     ) {
-        val accessToken = getAccessToken()
+        val accessToken = getAccessToken(context)
         val request = loginService.withdrawal("Bearer $accessToken")
         request.enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -175,18 +174,19 @@ class ApiService private constructor() {
     }
 
     suspend fun checkNickname(
+        context: Context,
         nickname: String,
         onSuccess: (Call<Void>, Response<Void>) -> Unit,
         onFailure: (Call<Void>, Throwable) -> Unit,
     ) {
-        getAccessToken()
+        getAccessToken(context)
             .onSuccess {accessToken ->
                 val request = userService.checkNickname("Bearer $accessToken", nickname)
                 request.enqueue(object: Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
                         Log.d(TAG, "요청 성공 (nickname/check) ${response.code()} ${response.message()}")
                         if (response.code() == 401) {
-                            requestLogin()
+                            requestLogin(context)
                         } else {
                             onSuccess(call, response)
                         }
@@ -200,18 +200,19 @@ class ApiService private constructor() {
     }
 
     suspend fun setNickname(
+        context: Context,
         nickname: String,
         onSuccess: (Call<Void>, Response<Void>) -> Unit,
         onFailure: (Call<Void>, Throwable) -> Unit,
     ) {
-        getAccessToken()
+        getAccessToken(context)
             .onSuccess { accessToken ->
                 val request = userService.setNickname("Bearer $accessToken", nickname)
                 request.enqueue(object : Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
                         Log.d(TAG, "요청 성공 (nickname/set) ${response.code()} ${response.message()}")
                         if (response.code() == 401) {
-                            requestLogin()
+                            requestLogin(context)
                         }
                         if (response.isSuccessful) {
                             val newAccessToken =

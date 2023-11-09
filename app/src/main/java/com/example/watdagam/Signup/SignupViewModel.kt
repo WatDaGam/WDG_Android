@@ -41,6 +41,7 @@ class SignupViewModel: ViewModel() {
             } else {
                 val apiService = ApiService.getInstance(context)
                 apiService.checkNickname(
+                    context,
                     nickname,
                     onSuccess = { _, response ->
                         if (response.isSuccessful) {
@@ -59,6 +60,7 @@ class SignupViewModel: ViewModel() {
         viewModelScope.launch {
             val apiService = ApiService.getInstance(context)
             apiService.setNickname(
+                context,
                 nickname,
                 onSuccess = { _, response ->
                     if (response.isSuccessful) {
