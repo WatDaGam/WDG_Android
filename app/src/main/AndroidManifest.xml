@@ -14,24 +14,28 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Watdagam"
         tools:targetApi="31">
+
+        <!-- Activities -->
         <activity
             android:name=".Intro.IntroActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="false"/>
         <activity
             android:name=".Signup.SignupActivity"
+            android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <!-- Kakao Login -->
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">
