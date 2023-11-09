@@ -6,7 +6,7 @@ import com.example.watdagam.fragments.ListFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.watdagam.databinding.ActivityMainBinding
-import com.example.watdagam.fragments.MyPageFragment
+import com.example.watdagam.MyPageFragment.MyPageFragment
 import com.example.watdagam.fragments.PostFragment
 
 private const val TAG_LIST = "list_fragment"

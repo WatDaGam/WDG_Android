@@ -1,4 +1,4 @@
-package com.example.watdagam.fragments
+package com.example.watdagam.MyPageFragment
 
 import android.content.Context
 import android.content.Intent

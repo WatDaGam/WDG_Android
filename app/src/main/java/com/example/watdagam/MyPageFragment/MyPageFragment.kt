@@ -1,4 +1,4 @@
-package com.example.watdagam.fragments
+package com.example.watdagam.MyPageFragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

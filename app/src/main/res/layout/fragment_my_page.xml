@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="start"
-    tools:context=".fragments.MyPageFragment">
+    tools:context=".MyPageFragment.MyPageFragment">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
