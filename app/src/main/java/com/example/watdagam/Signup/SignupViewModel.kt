@@ -39,7 +39,7 @@ class SignupViewModel: ViewModel() {
                 Toast.makeText(context, "완성되지 않은 한글 및 특수문자는 사용할 수 없습니다.", Toast.LENGTH_SHORT).show()
                 nicknameStatus.value = invalid
             } else {
-                val apiService = ApiService.getInstance(context)
+                val apiService = ApiService.getInstance(context.applicationContext)
                 apiService.checkNickname(
                     context,
                     nickname,
@@ -50,7 +50,7 @@ class SignupViewModel: ViewModel() {
                             nicknameStatus.value = invalid
                         }
                     },
-                    onFailure = { _, _ -> null },
+                    onFailure = { _, _ -> },
                 )
             }
         }
@@ -58,7 +58,7 @@ class SignupViewModel: ViewModel() {
 
     fun setNickname(nickname: String, context: Context) {
         viewModelScope.launch {
-            val apiService = ApiService.getInstance(context)
+            val apiService = ApiService.getInstance(context.applicationContext)
             apiService.setNickname(
                 context,
                 nickname,
@@ -70,7 +70,7 @@ class SignupViewModel: ViewModel() {
                         nicknameStatus.value = invalid
                     }
                 },
-                onFailure = { _, _ -> null },
+                onFailure = { _, _ -> },
             )
         }
     }

@@ -40,7 +40,7 @@ class LoginActivity : AppCompatActivity() {
         }.start()
 
         loginButtonKakao.setOnClickListener {
-            val kakaoService = KakaoService.getInstance(this)
+            val kakaoService = KakaoService.getInstance(this.applicationContext)
             kakaoService.login(
                 onSuccess = { accessToken -> onKakaoLoginSuccess(accessToken) },
                 onFailure = { -> onKakaoLoginFailure() },
