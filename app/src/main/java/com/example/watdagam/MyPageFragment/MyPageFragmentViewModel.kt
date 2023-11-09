@@ -13,36 +13,26 @@ import com.example.watdagam.api.UserInfo
 import kotlinx.coroutines.launch
 
 class MyPageFragmentViewModel: ViewModel() {
-    private val profile: MutableLiveData<UserInfo> by lazy {
-        MutableLiveData<UserInfo>().also {
-            profile.value = UserInfo(
-                ApiService.user_data_pref.nickname?: "",
-                ApiService.user_data_pref.posts,
-                ApiService.user_data_pref.likes
-            )
-        }
-    }
-    @JvmName("callFromUserInfo")
+    private val _profile = MutableLiveData(UserInfo("", 0, 0))
     fun getProfile(): MutableLiveData<UserInfo> {
-        return profile
+        return _profile
     }
+
     fun loadProfile(context: Context) {
         val cachedProfile = UserInfo(
             ApiService.user_data_pref.nickname?: "",
             ApiService.user_data_pref.posts,
             ApiService.user_data_pref.likes
         )
-        if (!profile.equals(cachedProfile)) {
-            profile.value = cachedProfile
-        }
+        _profile.postValue(cachedProfile)
         viewModelScope.launch {
             try {
-                val apiService = ApiService.getInstance(context)
+                val apiService = ApiService.getInstance(context.applicationContext)
                 val updatedProfile = apiService.getUserInfo(context)
                 ApiService.user_data_pref.nickname = updatedProfile.nickname
                 ApiService.user_data_pref.posts = updatedProfile.post
                 ApiService.user_data_pref.likes = updatedProfile.likes
-                profile.value = updatedProfile
+                _profile.postValue(updatedProfile)
             } catch (e: RuntimeException) {
                 Log.e("WDG_MY_PAGE", e.message ?: "(no error message)")
             }
