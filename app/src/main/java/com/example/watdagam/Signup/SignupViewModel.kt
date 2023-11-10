@@ -6,7 +6,7 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.watdagam.MainActivity
+import com.example.watdagam.main.MainActivity
 import com.example.watdagam.api.ApiService
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern

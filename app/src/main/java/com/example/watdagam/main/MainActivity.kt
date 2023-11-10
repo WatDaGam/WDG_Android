@@ -1,13 +1,14 @@
-package com.example.watdagam
+package com.example.watdagam.main
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.watdagam.list.ListFragment
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.example.watdagam.databinding.ActivityMainBinding
 import com.example.watdagam.MyPageFragment.MyPageFragment
+import com.example.watdagam.R
+import com.example.watdagam.databinding.ActivityMainBinding
 import com.example.watdagam.fragments.PostFragment
+import com.example.watdagam.list.ListFragment
 
 private const val TAG_LIST = "list_fragment"
 private const val TAG_POST = "post_fragment"

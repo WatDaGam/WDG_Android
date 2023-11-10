@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.watdagam.LoginActivity
-import com.example.watdagam.MainActivity
+import com.example.watdagam.main.MainActivity
 import com.example.watdagam.api.ApiService
 import kotlinx.coroutines.launch
 
