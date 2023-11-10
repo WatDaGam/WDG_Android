@@ -1,4 +1,4 @@
-package com.example.watdagam.MyPageFragment
+package com.example.watdagam.main
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,13 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import com.example.watdagam.R
 import com.example.watdagam.databinding.FragmentMyPageBinding
 
 class MyPageFragment : Fragment() {
     private lateinit var viewBinding: FragmentMyPageBinding
-    private lateinit var model: MyPageFragmentViewModel
+    private val model: MainActivityViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,8 +25,7 @@ class MyPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         viewBinding = FragmentMyPageBinding.inflate(inflater, container, false)
-        model = ViewModelProvider(this)[MyPageFragmentViewModel::class.java]
-        model.getProfile().observe(viewLifecycleOwner) {profile ->
+        model.getProfile().observe(viewLifecycleOwner) { profile ->
             viewBinding.toolbarTitle.text = profile.nickname
             viewBinding.profilePostsNumber.text = profile.post.toString()
             viewBinding.profileLikesNumber.text = profile.likes.toString()

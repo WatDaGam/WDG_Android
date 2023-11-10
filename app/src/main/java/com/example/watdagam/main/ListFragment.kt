@@ -1,4 +1,4 @@
-package com.example.watdagam.list
+package com.example.watdagam.main
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -1,4 +1,4 @@
-package com.example.watdagam.MyPageFragment
+package com.example.watdagam.main
 
 import android.content.Context
 import android.content.Intent
@@ -12,7 +12,8 @@ import com.example.watdagam.api.ApiService
 import com.example.watdagam.api.UserInfo
 import kotlinx.coroutines.launch
 
-class MyPageFragmentViewModel: ViewModel() {
+class MainActivityViewModel: ViewModel() {
+
     private val _profile = MutableLiveData(UserInfo("", 0, 0))
     fun getProfile(): MutableLiveData<UserInfo> {
         return _profile
