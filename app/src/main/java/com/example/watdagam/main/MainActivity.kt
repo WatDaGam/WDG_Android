@@ -1,6 +1,7 @@
 package com.example.watdagam.main
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -13,6 +14,7 @@ private const val TAG_MY_PAGE = "my_page_fragment"
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private val model: MainActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +25,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.navigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.listFragment -> setFragment(TAG_LIST, ListFragment())
+                R.id.listFragment -> {
+                    model.reloadLocation(this)
+                    setFragment(TAG_LIST, ListFragment())
+                }
                 R.id.postFragment -> setFragment(TAG_POST, PostFragment())
                 R.id.myPageFragment -> setFragment(TAG_MY_PAGE, MyPageFragment())
             }
