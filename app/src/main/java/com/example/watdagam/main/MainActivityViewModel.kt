@@ -87,14 +87,19 @@ class MainActivityViewModel: ViewModel() {
     }
 
     private val _currentLocation = MutableLiveData<Location>()
-    private val _currentWDGLocation = MutableLiveData<WDGLocation>()
+    private val _lastLocation = MutableLiveData<Location>()
+    private val _userLocation = MutableLiveData<WDGLocation>()
 
     fun getCurrentLocation(): MutableLiveData<Location> {
         return _currentLocation
     }
 
-    fun getCurrentWDGLocation(): MutableLiveData<WDGLocation> {
-        return _currentWDGLocation
+    fun getLastLocation(): MutableLiveData<Location> {
+        return _lastLocation
+    }
+
+    fun getUserLocation(): MutableLiveData<WDGLocation> {
+        return _userLocation
     }
     fun reloadLocation(activity: Activity) {
         if (
@@ -152,9 +157,10 @@ class MainActivityViewModel: ViewModel() {
         } catch (e: IOException) {
             Log.e(TAG, "지명 가져올 수 없습니다.")
         }
-        _currentWDGLocation.postValue(WDGLocation(
+        _userLocation.postValue(WDGLocation(
             locationText,
             "${location.latitude} ${location.longitude}"
         ))
+        _lastLocation.postValue(location)
     }
 }

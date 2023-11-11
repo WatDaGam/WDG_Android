@@ -1,6 +1,8 @@
 package com.example.watdagam.main
 
+import android.location.Location
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -22,6 +24,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setFragment(TAG_LIST, ListFragment())
+
+        model.getCurrentLocation().observe(this) { currentLocation: Location ->
+            val lastLocationLiveData = model.getLastLocation()
+            if (lastLocationLiveData.value == null) {
+                model.updateLocationInfo(this.applicationContext, currentLocation)
+            } else {
+                val distance = currentLocation.distanceTo(lastLocationLiveData.value!!)
+                if (distance > 30.0) {
+                    model.updateLocationInfo(this.applicationContext, currentLocation)
+                }
+                Toast.makeText(this.applicationContext, "distance: ${distance}m", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         binding.navigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {

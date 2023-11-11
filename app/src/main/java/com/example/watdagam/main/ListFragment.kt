@@ -28,7 +28,7 @@ class ListFragment : Fragment() {
             model.updateLocationInfo(requireContext(), location)
         }
 
-        model.getCurrentWDGLocation().observe(requireActivity()) { wdgLocation: WDGLocation ->
+        model.getUserLocation().observe(requireActivity()) { wdgLocation: WDGLocation ->
             viewBinding.toolbarPlaceName.text = wdgLocation.locationText
             viewBinding.toolbarGps.text = wdgLocation.coordinate
             Toast.makeText(requireContext(), "Location Updated!", Toast.LENGTH_SHORT).show()
