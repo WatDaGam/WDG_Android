@@ -38,12 +38,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        model.startLocationTracking(this)
+
         binding.navigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.listFragment -> {
-                    model.reloadLocation(this)
-                    setFragment(TAG_LIST, ListFragment())
-                }
+                R.id.listFragment -> setFragment(TAG_LIST, ListFragment())
                 R.id.postFragment -> setFragment(TAG_POST, PostFragment())
                 R.id.myPageFragment -> setFragment(TAG_MY_PAGE, MyPageFragment())
             }

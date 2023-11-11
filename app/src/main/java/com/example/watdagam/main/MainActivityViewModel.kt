@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -17,6 +18,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.watdagam.LoginActivity
 import com.example.watdagam.api.ApiService
 import com.example.watdagam.api.UserInfo
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.launch
@@ -84,6 +88,8 @@ class MainActivityViewModel: ViewModel() {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
         )
+        private lateinit var locationRequest: LocationRequest
+        private lateinit var locationCallback: LocationCallback
     }
 
     private val _currentLocation = MutableLiveData<Location>()
@@ -133,6 +139,50 @@ class MainActivityViewModel: ViewModel() {
         }
     }
 
+    fun startLocationTracking(activity: Activity) {
+        if (
+            ActivityCompat.checkSelfPermission(
+                activity.applicationContext,
+                LOCATION_PERMISSIONS[0],
+            ) == PackageManager.PERMISSION_DENIED ||
+            ActivityCompat.checkSelfPermission(
+                activity.applicationContext,
+                LOCATION_PERMISSIONS[1],
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
+            Toast.makeText(
+                activity.applicationContext,
+                "앱을 사용하기 위해서는 자세한 위치 사용 권한이 필요합니다.",
+                Toast.LENGTH_SHORT
+            ).show()
+            ActivityCompat.requestPermissions(
+                activity,
+                LOCATION_PERMISSIONS,
+                REQUEST_LOCATION
+            )
+        } else {
+            val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(
+                activity.applicationContext,
+            )
+            locationRequest = LocationRequest.Builder(3_000)
+                .setIntervalMillis(5_000)
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                .build()
+            locationCallback = object : LocationCallback() {
+                override fun onLocationResult(p0: LocationResult) {
+                    _currentLocation.postValue(p0.lastLocation)
+                    Toast.makeText(activity.applicationContext, "Location automatically updated", Toast.LENGTH_SHORT).show()
+                    super.onLocationResult(p0)
+                }
+            }
+            fusedLocationProviderClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper()
+            )
+        }
+    }
+
     fun updateLocationInfo(context: Context, location: Location) {
         var locationText = ""
         try {
@@ -155,7 +205,7 @@ class MainActivityViewModel: ViewModel() {
                 address.countryName
             }
         } catch (e: IOException) {
-            Log.e(TAG, "지명 가져올 수 없습니다.")
+            Log.e(TAG, "지명을 가져올 수 없습니다.")
         }
         _userLocation.postValue(WDGLocation(
             locationText,
