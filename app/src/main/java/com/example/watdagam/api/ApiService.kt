@@ -3,8 +3,10 @@ package com.example.watdagam.api
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.location.Address
 import android.util.Log
 import com.example.watdagam.LoginActivity
+import com.example.watdagam.data.PostDto
 import com.example.watdagam.data.UserInfo
 import retrofit2.Call
 import retrofit2.Callback
@@ -18,11 +20,6 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
 
-data class UserInfo (
-    val nickname: String,
-    val post: Int,
-    val likes: Int,
-)
 class ApiService private constructor() {
     companion object {
         private var instance: ApiService? = null
@@ -30,13 +27,15 @@ class ApiService private constructor() {
         lateinit var user_data_pref: UserDataSharedPreference
 
         private const val TAG = "WDG_API"
-        private const val BASE_URL: String = "http://52.78.126.48:8080"
+//        private const val BASE_URL: String = "http://52.78.126.48:8080"
+        private const val BASE_URL: String = "https://40ed5668-4cdb-48a1-96cb-5c1644a4103a.mock.pstmn.io"
         private val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         private val loginService: LoginService = retrofit.create(LoginService::class.java)
         private val userService: UserService = retrofit.create(UserService::class.java)
+        private val storyService: StoryService = retrofit.create(StoryService::class.java)
 
         fun getInstance(applicationContext: Context): ApiService {
             return instance ?: ApiService().also {
@@ -89,10 +88,14 @@ class ApiService private constructor() {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 Log.d(TAG, "요청 성공 (login) ${response.code()} ${response.message()}")
                 if (response.isSuccessful) {
-                    val accessToken = response.headers()["Authorization"].toString().split(" ")[1]
-                    val refreshToken = response.headers()["Refresh-Token"].toString()
-                    val accessTokenExpTime = response.headers()["access-expiration-time"].toString().toLong()
-                    val refreshTokenExpTime = response.headers()["refresh-expiration-time"].toString().toLong()
+//                    val accessToken = response.headers()["Authorization"].toString().split(" ")[1]
+//                    val refreshToken = response.headers()["Refresh-Token"].toString()
+//                    val accessTokenExpTime = response.headers()["access-expiration-time"].toString().toLong()
+//                    val refreshTokenExpTime = response.headers()["refresh-expiration-time"].toString().toLong()
+                    val accessToken = "valid-token"
+                    val refreshToken = "valid-token"
+                    val accessTokenExpTime = System.currentTimeMillis() + 300_000 // 5 min
+                    val refreshTokenExpTime = System.currentTimeMillis() + 86400_000 // 1 day
                     token_pref.setAccessToken(accessToken, accessTokenExpTime)
                     token_pref.setRefreshToken(refreshToken, refreshTokenExpTime)
                 }
@@ -119,9 +122,11 @@ class ApiService private constructor() {
             val response = loginService.refreshToken(cachedRefreshToken)
             when (response.code()) {
                 200 -> {
-                    val accessToken = response.headers()["Authorization"].toString().split(" ")[1]
-                    val accessTokenExpTime =
-                        response.headers()["access-expiration-time"].toString().toLong()
+//                    val accessToken = response.headers()["Authorization"].toString().split(" ")[1]
+//                    val accessTokenExpTime =
+//                        response.headers()["access-expiration-time"].toString().toLong()
+                    val accessToken = "valid-token"
+                    val accessTokenExpTime = System.currentTimeMillis() + 300_000 // 5 min
                     token_pref.setAccessToken(accessToken, accessTokenExpTime)
                     accessToken
                 }
@@ -217,13 +222,17 @@ class ApiService private constructor() {
                             requestLogin(context)
                         }
                         if (response.isSuccessful) {
-                            val newAccessToken =
-                                response.headers()["Authorization"].toString().split(" ")[1]
-                            val newRefreshToken = response.headers()["Refresh-Token"].toString()
-                            val newAccessTokenExpTime =
-                                response.headers()["access-expiration-time"].toString().toLong()
-                            val newRefreshTokenExpTime =
-                                response.headers()["refresh-expiration-time"].toString().toLong()
+//                            val newAccessToken =
+//                                response.headers()["Authorization"].toString().split(" ")[1]
+//                            val newRefreshToken = response.headers()["Refresh-Token"].toString()
+//                            val newAccessTokenExpTime =
+//                                response.headers()["access-expiration-time"].toString().toLong()
+//                            val newRefreshTokenExpTime =
+//                                response.headers()["refresh-expiration-time"].toString().toLong()
+                            val newAccessToken = "valid-token"
+                            val newRefreshToken = "valid-token"
+                            val newAccessTokenExpTime = System.currentTimeMillis() + 300_000 // 5 min
+                            val newRefreshTokenExpTime = System.currentTimeMillis() + 86400_000 // 1 day
                             token_pref.setAccessToken(newAccessToken, newAccessTokenExpTime)
                             token_pref.setRefreshToken(newRefreshToken, newRefreshTokenExpTime)
                         }
@@ -249,6 +258,63 @@ class ApiService private constructor() {
             throw RuntimeException("Invalid access token")
         }
         throw RuntimeException("Unhandled Code (userinfo) ${response.code()}")
+    }
+
+    interface StoryService {
+        @POST("story/upload")
+        suspend fun uploadStory(
+            @Header("Authorization") token: String,
+            @Body post: PostDto,
+        ): Response<Void>
+
+        @GET("story/info")
+        suspend fun getStory(
+            @Header("Authorization") token: String,
+            @Query("storyId") storyId: Int,
+        ): Response<Void>
+
+        @DELETE("story/delete")
+        suspend fun deleteStory(
+            @Header("Authorization") token: String,
+            @Query("storyId") storyId: Int,
+        ): Response<Void>
+    }
+
+    suspend fun uploadStory(context: Context, content: String, address: Address) {
+        val accessToken = getAccessToken(context).getOrNull()!!
+        val story = PostDto(content, address.latitude, address.longitude)
+        val response = storyService.uploadStory("Bearer $accessToken", story)
+        Log.d(TAG, "story/upload -> ${response.code()} ${response.message()}")
+        if (response.code() == 401) {
+            requestLogin(context)
+            throw RuntimeException("Invalid access token")
+        } else if (!response.isSuccessful) {
+            throw RuntimeException("Fail on api")
+        }
+    }
+
+    suspend fun getStory(context: Context, storyId: Int) {
+        val accessToken = getAccessToken(context).getOrNull()!!
+        val response = storyService.getStory("Bearer $accessToken", storyId)
+        Log.d(TAG, "story/info -> ${response.code()} ${response.message()}")
+        if (response.code() == 401) {
+            requestLogin(context)
+            throw RuntimeException("Invalid access token")
+        } else if (!response.isSuccessful) {
+            throw RuntimeException("Fail on api")
+        }
+    }
+
+    suspend fun deleteStory(context: Context, storyId: Int) {
+        val accessToken = getAccessToken(context).getOrNull()!!
+        val response = storyService.deleteStory("Bearer $accessToken", storyId)
+        Log.d(TAG, "story/delete -> ${response.code()} ${response.message()}")
+        if (response.code() == 401) {
+            requestLogin(context)
+            throw RuntimeException("Invalid access token")
+        } else if (!response.isSuccessful) {
+            throw RuntimeException("Fail on api")
+        }
     }
 
 }
