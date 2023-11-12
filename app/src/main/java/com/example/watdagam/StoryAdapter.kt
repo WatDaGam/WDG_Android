@@ -6,31 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.watdagam.data.Story
 import com.example.watdagam.databinding.ListItemStoryBinding
-import java.util.Date
-
-data class StoryDto(
-    val createdAt: Date,
-    val lati: Double,
-    val longi: Double,
-    val nickname: String,
-    val id: Long,
-    val userId: Int,
-    val content: String,
-    val likeNum: Int,
-)
-
-data class Story(
-    val createdAt: Date,
-    val lati: Double,
-    val longi: Double,
-    val nickname: String,
-    val id: Long,
-    val userId: Int,
-    val content: String,
-    val likeNum: Int,
-    val distance: Double,
-)
 
 class StoryAdapter(val datas: List<Story>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun getItemCount(): Int = datas.size

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.example.watdagam.LoginActivity
+import com.example.watdagam.data.UserInfo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

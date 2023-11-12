@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
                 if (distance > 30.0) {
                     model.updateLocationInfo(this.applicationContext, currentLocation)
                 }
-//                Toast.makeText(this.applicationContext, "distance: ${distance}m", Toast.LENGTH_SHORT).show()
             }
         }
 

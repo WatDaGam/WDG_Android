@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.watdagam.LoginActivity
 import com.example.watdagam.api.ApiService
-import com.example.watdagam.api.UserInfo
+import com.example.watdagam.data.UserInfo
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -26,11 +26,6 @@ import com.google.android.gms.location.Priority
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.Locale
-
-data class WDGLocation (
-    val locationText: String,
-    val coordinate: String,
-)
 
 class MainActivityViewModel: ViewModel() {
 
@@ -94,7 +89,7 @@ class MainActivityViewModel: ViewModel() {
 
     private val _currentLocation = MutableLiveData<Location>()
     private val _lastLocation = MutableLiveData<Location>()
-    private val _userLocation = MutableLiveData<WDGLocation>()
+    private val _address = MutableLiveData<Address>()
 
     fun getCurrentLocation(): MutableLiveData<Location> {
         return _currentLocation
@@ -104,8 +99,8 @@ class MainActivityViewModel: ViewModel() {
         return _lastLocation
     }
 
-    fun getUserLocation(): MutableLiveData<WDGLocation> {
-        return _userLocation
+    fun getAddress(): MutableLiveData<Address> {
+        return _address
     }
     fun reloadLocation(activity: Activity) {
         if (
@@ -171,7 +166,7 @@ class MainActivityViewModel: ViewModel() {
             locationCallback = object : LocationCallback() {
                 override fun onLocationResult(p0: LocationResult) {
                     _currentLocation.postValue(p0.lastLocation)
-//                    Toast.makeText(activity.applicationContext, "Location automatically updated", Toast.LENGTH_SHORT).show()
+                    Log.d(TAG, p0.lastLocation.toString())
                     super.onLocationResult(p0)
                 }
             }
@@ -184,33 +179,18 @@ class MainActivityViewModel: ViewModel() {
     }
 
     fun updateLocationInfo(context: Context, location: Location) {
-        var locationText = ""
         try {
             val geocoder = Geocoder(context, Locale.KOREA)
             val addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1) as List<Address>
             val address = addressList[0]
-            Log.d(TAG, "${address.adminArea} / ${address.subAdminArea} / ${address.locality} / ${address.subLocality} / ${address.thoroughfare}")
-
-            locationText = if (!address.thoroughfare.isNullOrBlank()) {
-                address.thoroughfare
-            } else if (!address.subLocality.isNullOrBlank()) {
-                address.subLocality
-            } else if (!address.locality.isNullOrBlank()) {
-                address.locality
-            } else if (!address.subAdminArea.isNullOrBlank()) {
-                address.subAdminArea
-            } else if (!address.adminArea.isNullOrBlank()) {
-                address.adminArea
-            } else {
-                address.countryName
-            }
+            _address.postValue(address)
         } catch (e: IOException) {
+            val unknownAddress = Address(Locale.KOREA)
+            unknownAddress.latitude = location.latitude
+            unknownAddress.longitude = location.longitude
+            unknownAddress.countryName = "???"
+            _address.postValue(unknownAddress)
             Log.e(TAG, "지명을 가져올 수 없습니다.")
         }
-        _userLocation.postValue(WDGLocation(
-            locationText,
-            "${location.latitude} ${location.longitude}"
-        ))
-        _lastLocation.postValue(location)
     }
 }
