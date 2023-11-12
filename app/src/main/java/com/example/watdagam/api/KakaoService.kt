@@ -13,7 +13,7 @@ class KakaoService private constructor() {
         private var instance: KakaoService? = null
         private lateinit var appContext: Context
 
-        private const val TAG = "KAKAO_API"
+        private const val TAG = "WDG_KAKAO_API"
         private const val APP_KEY = "27c267b47e61135cd098eb3fc9270bc6"
 
         fun getInstance(context: Context): KakaoService {

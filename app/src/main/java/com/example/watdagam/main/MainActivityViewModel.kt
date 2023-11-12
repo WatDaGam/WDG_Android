@@ -171,7 +171,7 @@ class MainActivityViewModel: ViewModel() {
             locationCallback = object : LocationCallback() {
                 override fun onLocationResult(p0: LocationResult) {
                     _currentLocation.postValue(p0.lastLocation)
-                    Toast.makeText(activity.applicationContext, "Location automatically updated", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(activity.applicationContext, "Location automatically updated", Toast.LENGTH_SHORT).show()
                     super.onLocationResult(p0)
                 }
             }

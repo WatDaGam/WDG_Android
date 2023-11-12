@@ -2,7 +2,6 @@ package com.example.watdagam.main
 
 import android.location.Location
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -34,7 +33,7 @@ class MainActivity : AppCompatActivity() {
                 if (distance > 30.0) {
                     model.updateLocationInfo(this.applicationContext, currentLocation)
                 }
-                Toast.makeText(this.applicationContext, "distance: ${distance}m", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this.applicationContext, "distance: ${distance}m", Toast.LENGTH_SHORT).show()
             }
         }
 
