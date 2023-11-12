@@ -27,11 +27,11 @@ class MainActivity : AppCompatActivity() {
         model.getCurrentLocation().observe(this) { currentLocation: Location ->
             val lastLocationLiveData = model.getLastLocation()
             if (lastLocationLiveData.value == null) {
-                model.updateLocationInfo(this.applicationContext, currentLocation)
+                model.setListAddress(this.applicationContext, currentLocation)
             } else {
                 val distance = currentLocation.distanceTo(lastLocationLiveData.value!!)
                 if (distance > 30.0) {
-                    model.updateLocationInfo(this.applicationContext, currentLocation)
+                    model.setListAddress(this.applicationContext, currentLocation)
                 }
             }
         }
@@ -39,9 +39,20 @@ class MainActivity : AppCompatActivity() {
         model.startLocationTracking(this)
 
         binding.navigationView.setOnItemSelectedListener { item ->
+            val currentLocation = model.getCurrentLocation().value
             when (item.itemId) {
-                R.id.listFragment -> setFragment(TAG_LIST, ListFragment())
-                R.id.postFragment -> setFragment(TAG_POST, PostFragment())
+                R.id.listFragment -> {
+                    if (currentLocation != null) {
+                        model.setListAddress(this, currentLocation)
+                    }
+                    setFragment(TAG_LIST, ListFragment())
+                }
+                R.id.postFragment -> {
+                    if (currentLocation != null) {
+                        model.setPostAddress(this, currentLocation)
+                    }
+                    setFragment(TAG_POST, PostFragment())
+                }
                 R.id.myPageFragment -> setFragment(TAG_MY_PAGE, MyPageFragment())
             }
             true

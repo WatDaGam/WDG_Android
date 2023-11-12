@@ -89,19 +89,14 @@ class MainActivityViewModel: ViewModel() {
 
     private val _currentLocation = MutableLiveData<Location>()
     private val _lastLocation = MutableLiveData<Location>()
-    private val _address = MutableLiveData<Address>()
+    private val _listAddress = MutableLiveData<Address>()
+    private val _postAddress = MutableLiveData<Address>()
 
-    fun getCurrentLocation(): MutableLiveData<Location> {
-        return _currentLocation
-    }
+    fun getCurrentLocation(): MutableLiveData<Location> = _currentLocation
+    fun getLastLocation(): MutableLiveData<Location> = _lastLocation
+    fun getListAddress(): MutableLiveData<Address> = _listAddress
+    fun getPostAddress(): MutableLiveData<Address> = _postAddress
 
-    fun getLastLocation(): MutableLiveData<Location> {
-        return _lastLocation
-    }
-
-    fun getAddress(): MutableLiveData<Address> {
-        return _address
-    }
     fun reloadLocation(activity: Activity) {
         if (
             ActivityCompat.checkSelfPermission(
@@ -178,18 +173,34 @@ class MainActivityViewModel: ViewModel() {
         }
     }
 
-    fun updateLocationInfo(context: Context, location: Location) {
+    fun setListAddress(context: Context, location: Location) {
         try {
             val geocoder = Geocoder(context, Locale.KOREA)
             val addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1) as List<Address>
             val address = addressList[0]
-            _address.postValue(address)
+            _listAddress.postValue(address)
         } catch (e: IOException) {
             val unknownAddress = Address(Locale.KOREA)
             unknownAddress.latitude = location.latitude
             unknownAddress.longitude = location.longitude
             unknownAddress.countryName = "???"
-            _address.postValue(unknownAddress)
+            _listAddress.postValue(unknownAddress)
+            Log.e(TAG, "지명을 가져올 수 없습니다.")
+        }
+    }
+
+    fun setPostAddress(context: Context, location: Location) {
+        try {
+            val geocoder = Geocoder(context, Locale.KOREA)
+            val addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1) as List<Address>
+            val address = addressList[0]
+            _postAddress.postValue(address)
+        } catch (e: IOException) {
+            val unknownAddress = Address(Locale.KOREA)
+            unknownAddress.latitude = location.latitude
+            unknownAddress.longitude = location.longitude
+            unknownAddress.countryName = "???"
+            _postAddress.postValue(unknownAddress)
             Log.e(TAG, "지명을 가져올 수 없습니다.")
         }
     }

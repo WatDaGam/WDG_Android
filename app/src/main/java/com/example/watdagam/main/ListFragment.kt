@@ -52,7 +52,7 @@ class ListFragment : Fragment() {
     ): View {
         viewBinding = FragmentListBinding.inflate(inflater, container, false)
 
-        model.getAddress().observe(requireActivity()) { address: Address ->
+        model.getListAddress().observe(requireActivity()) { address: Address ->
             viewBinding.toolbarPlaceName.text =
                 if (!address.thoroughfare.isNullOrBlank()) {
                     address.thoroughfare
