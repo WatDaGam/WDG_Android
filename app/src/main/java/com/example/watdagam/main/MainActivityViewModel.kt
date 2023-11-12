@@ -204,4 +204,16 @@ class MainActivityViewModel: ViewModel() {
             Log.e(TAG, "지명을 가져올 수 없습니다.")
         }
     }
+
+    fun postStory(context: Context, content: String, address: Address) {
+        viewModelScope.launch {
+            try {
+                val apiService = ApiService.getInstance(context)
+                apiService.uploadStory(context, content, address)
+                Toast.makeText(context, "메세지를 남겼습니다.", Toast.LENGTH_SHORT).show()
+            } catch (e: RuntimeException) {
+                Log.e(TAG, e.message ?: "no error message")
+            }
+        }
+    }
 }

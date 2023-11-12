@@ -3,6 +3,7 @@ package com.example.watdagam.main
 import android.location.Address
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,6 +57,15 @@ class PostFragment : Fragment() {
             }
         }
         viewBinding.textCount.text = "0/50"
+
+        viewBinding.post.setOnClickListener { view: View ->
+            val address = model.getPostAddress().value
+            if (address == null) {
+                Log.e("WDG_POST_FRAGMENT", "post address undefined")
+            } else {
+                model.postStory(requireContext(), viewBinding.textEdit.text.toString(), address)
+            }
+        }
 
         return viewBinding.root
     }
