@@ -15,7 +15,6 @@
         android:layout_height="wrap_content"
         android:padding="15dp"
         app:navigationIcon="@drawable/ic_arrow_back"
-        app:menu="@menu/my_page_menu"
         android:background="@color/toolbar_background">
 
         <TextView
