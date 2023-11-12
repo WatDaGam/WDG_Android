@@ -24,4 +24,8 @@
     <string name="tag_my_post">내가 남긴 글</string>
     <string name="tag_my_like">좋아요 누른 글</string>
 
+    <string name="post_button">남기기</string>
+    <string name="post_hint">남길 메세지를 입력해주세요</string>
+    <string name="post_cancel">취소</string>
+
 </resources>
