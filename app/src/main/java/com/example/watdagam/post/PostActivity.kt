@@ -37,7 +37,7 @@ class PostActivity : AppCompatActivity() {
                 Toast.makeText(this, "남길 내용이 없습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, viewBinding.textEdit.text.toString(), Toast.LENGTH_SHORT).show()
-//                model.postStory(this.applicationContext, viewBinding.textEdit.text.toString(), latitude, longitude)
+                model.postStory(this.applicationContext, viewBinding.textEdit.text.toString(), latitude, longitude)
             }
         }
 

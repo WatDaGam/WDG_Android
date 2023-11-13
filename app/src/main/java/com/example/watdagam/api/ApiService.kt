@@ -3,7 +3,6 @@ package com.example.watdagam.api
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.location.Address
 import android.util.Log
 import com.example.watdagam.LoginActivity
 import com.example.watdagam.data.PostDto
@@ -27,7 +26,7 @@ class ApiService private constructor() {
         lateinit var user_data_pref: UserDataSharedPreference
 
         private const val TAG = "WDG_API"
-//        private const val BASE_URL: String = "http://52.78.126.48:8080"
+//        private const val BASE_URL: String = "http://43.202.3.132:8080"
         private const val BASE_URL: String = "https://40ed5668-4cdb-48a1-96cb-5c1644a4103a.mock.pstmn.io"
         private val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -89,13 +88,12 @@ class ApiService private constructor() {
                 Log.d(TAG, "요청 성공 (login) ${response.code()} ${response.message()}")
                 if (response.isSuccessful) {
 //                    val accessToken = response.headers()["Authorization"].toString().split(" ")[1]
-//                    val refreshToken = response.headers()["Refresh-Token"].toString()
-//                    val accessTokenExpTime = response.headers()["access-expiration-time"].toString().toLong()
-//                    val refreshTokenExpTime = response.headers()["refresh-expiration-time"].toString().toLong()
                     val accessToken = "valid-token"
-                    val refreshToken = "valid-token"
-                    val accessTokenExpTime = System.currentTimeMillis() + 300_000 // 5 min
-                    val refreshTokenExpTime = System.currentTimeMillis() + 86400_000 // 1 day
+                    val refreshToken = response.headers()["Refresh-Token"].toString()
+//                    val accessTokenExpTime = response.headers()["access-expiration-time"].toString().toLong()
+                    val accessTokenExpTime = System.currentTimeMillis() + 300_000
+//                    val refreshTokenExpTime = response.headers()["refresh-expiration-time"].toString().toLong()
+                    val refreshTokenExpTime = System.currentTimeMillis() + 3_000_000
                     token_pref.setAccessToken(accessToken, accessTokenExpTime)
                     token_pref.setRefreshToken(refreshToken, refreshTokenExpTime)
                 }
@@ -123,10 +121,10 @@ class ApiService private constructor() {
             when (response.code()) {
                 200 -> {
 //                    val accessToken = response.headers()["Authorization"].toString().split(" ")[1]
-//                    val accessTokenExpTime =
-//                        response.headers()["access-expiration-time"].toString().toLong()
                     val accessToken = "valid-token"
-                    val accessTokenExpTime = System.currentTimeMillis() + 300_000 // 5 min
+                    val accessTokenExpTime =
+//                        response.headers()["access-expiration-time"].toString().toLong()
+                        System.currentTimeMillis() + 300_000
                     token_pref.setAccessToken(accessToken, accessTokenExpTime)
                     accessToken
                 }
@@ -222,17 +220,16 @@ class ApiService private constructor() {
                             requestLogin(context)
                         }
                         if (response.isSuccessful) {
-//                            val newAccessToken =
+                            val newAccessToken =
 //                                response.headers()["Authorization"].toString().split(" ")[1]
-//                            val newRefreshToken = response.headers()["Refresh-Token"].toString()
-//                            val newAccessTokenExpTime =
+                                "valid-token"
+                            val newRefreshToken = response.headers()["Refresh-Token"].toString()
+                            val newAccessTokenExpTime =
 //                                response.headers()["access-expiration-time"].toString().toLong()
-//                            val newRefreshTokenExpTime =
+                                System.currentTimeMillis() + 300_000
+                            val newRefreshTokenExpTime =
 //                                response.headers()["refresh-expiration-time"].toString().toLong()
-                            val newAccessToken = "valid-token"
-                            val newRefreshToken = "valid-token"
-                            val newAccessTokenExpTime = System.currentTimeMillis() + 300_000 // 5 min
-                            val newRefreshTokenExpTime = System.currentTimeMillis() + 86400_000 // 1 day
+                                System.currentTimeMillis() + 3_000_000
                             token_pref.setAccessToken(newAccessToken, newAccessTokenExpTime)
                             token_pref.setRefreshToken(newRefreshToken, newRefreshTokenExpTime)
                         }
@@ -280,9 +277,9 @@ class ApiService private constructor() {
         ): Response<Void>
     }
 
-    suspend fun uploadStory(context: Context, content: String, address: Address) {
+    suspend fun uploadStory(context: Context, content: String, latitude: Double, longitude: Double) {
         val accessToken = getAccessToken(context).getOrNull()!!
-        val story = PostDto(content, address.latitude, address.longitude)
+        val story = PostDto(content, latitude, longitude)
         val response = storyService.uploadStory("Bearer $accessToken", story)
         Log.d(TAG, "story/upload -> ${response.code()} ${response.message()}")
         if (response.code() == 401) {
