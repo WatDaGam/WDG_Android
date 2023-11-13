@@ -90,12 +90,10 @@ class MainActivityViewModel: ViewModel() {
     private val _currentLocation = MutableLiveData<Location>()
     private val _lastLocation = MutableLiveData<Location>()
     private val _listAddress = MutableLiveData<Address>()
-    private val _postAddress = MutableLiveData<Address>()
 
     fun getCurrentLocation(): MutableLiveData<Location> = _currentLocation
     fun getLastLocation(): MutableLiveData<Location> = _lastLocation
     fun getListAddress(): MutableLiveData<Address> = _listAddress
-    fun getPostAddress(): MutableLiveData<Address> = _postAddress
 
     fun reloadLocation(activity: Activity) {
         if (
@@ -186,34 +184,6 @@ class MainActivityViewModel: ViewModel() {
             unknownAddress.countryName = "???"
             _listAddress.postValue(unknownAddress)
             Log.e(TAG, "지명을 가져올 수 없습니다.")
-        }
-    }
-
-    fun setPostAddress(context: Context, location: Location) {
-        try {
-            val geocoder = Geocoder(context, Locale.KOREA)
-            val addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1) as List<Address>
-            val address = addressList[0]
-            _postAddress.postValue(address)
-        } catch (e: IOException) {
-            val unknownAddress = Address(Locale.KOREA)
-            unknownAddress.latitude = location.latitude
-            unknownAddress.longitude = location.longitude
-            unknownAddress.countryName = "???"
-            _postAddress.postValue(unknownAddress)
-            Log.e(TAG, "지명을 가져올 수 없습니다.")
-        }
-    }
-
-    fun postStory(context: Context, content: String, address: Address) {
-        viewModelScope.launch {
-            try {
-                val apiService = ApiService.getInstance(context)
-                apiService.uploadStory(context, content, address)
-                Toast.makeText(context, "메세지를 남겼습니다.", Toast.LENGTH_SHORT).show()
-            } catch (e: RuntimeException) {
-                Log.e(TAG, e.message ?: "no error message")
-            }
         }
     }
 }
