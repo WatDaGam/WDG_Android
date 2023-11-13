@@ -17,25 +17,13 @@ class PostActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val address = intent.extras?.getString("KEY_WDG_ADDRESS") ?: ""
+        val latitude = intent.extras?.getDouble("KEY_WDG_LATITUDE") ?: 0.0
+        val longitude = intent.extras?.getDouble("KEY_WDG_LONGITUDE") ?: 0.0
         viewBinding = ActivityPostBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-//        model.getPostAddress().observe(requireActivity()) { address: Address ->
-//            viewBinding.locationName.text =
-//                if (!address.thoroughfare.isNullOrBlank()) {
-//                    address.thoroughfare
-//                } else if (!address.subLocality.isNullOrBlank()) {
-//                    address.subLocality
-//                } else if (!address.locality.isNullOrBlank()) {
-//                    address.locality
-//                } else if (!address.subAdminArea.isNullOrBlank()) {
-//                    address.subAdminArea
-//                } else if (!address.adminArea.isNullOrBlank()) {
-//                    address.adminArea
-//                } else {
-//                    address.countryName
-//                }
-//        }
+        viewBinding.locationName.text = address
 
         viewBinding.textEdit.addTextChangedListener { editable: Editable? ->
             if (editable != null) {
@@ -49,6 +37,7 @@ class PostActivity : AppCompatActivity() {
                 Toast.makeText(this, "남길 내용이 없습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, viewBinding.textEdit.text.toString(), Toast.LENGTH_SHORT).show()
+//                model.postStory(this.applicationContext, viewBinding.textEdit.text.toString(), latitude, longitude)
             }
         }
 
@@ -56,6 +45,21 @@ class PostActivity : AppCompatActivity() {
             this.onBackPressedDispatcher.onBackPressed()
         }
 
-//        this.onBackPressedDispatcher.addCallback(this, backPressCallback)
+        this.onBackPressedDispatcher.addCallback(this, backPressCallback)
+    }
+
+    private val backPressCallback = object: OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (!viewBinding.textEdit.text.isNullOrBlank()) {
+                val dialog = AlertDialog.Builder(this@PostActivity)
+                    .setMessage("메세지가 사라집니다. 그래도 뒤로 가시겠습니까?")
+                    .setNegativeButton("아니요", null)
+                    .setPositiveButton("네"){ _, _ -> finish()}
+                    .create()
+                dialog.show()
+            } else {
+                finish()
+            }
+        }
     }
 }
