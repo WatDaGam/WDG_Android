@@ -28,4 +28,6 @@
     <string name="post_hint">남길 메세지를 입력해주세요</string>
     <string name="post_cancel">취소</string>
 
+    <string name="toolbar_back">뒤로가기</string>
+
 </resources>

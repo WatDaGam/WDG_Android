@@ -4,10 +4,8 @@
     <!-- 인터넷 사용 권한 설정 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Location 사용 권한 설정 -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <!-- 백그라운드에서 Location 사용 권한 설정(지금은 사용 안함) -->
-    <!-- uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -19,27 +17,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Watdagam"
         tools:targetApi="31">
-
+        <activity
+            android:name=".post.PostActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <!-- Activities -->
         <activity
             android:name=".Intro.IntroActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".main.MainActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"  />
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".LoginActivity"
             android:exported="false"/>
         <activity
             android:name=".Signup.SignupActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"/>
 
         <!-- Kakao Login -->
         <activity
@@ -58,6 +60,5 @@
             </intent-filter>
         </activity>
     </application>
-
 
 </manifest>
