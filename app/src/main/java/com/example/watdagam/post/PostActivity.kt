@@ -8,6 +8,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
+import com.example.watdagam.R
 import com.example.watdagam.api.ApiService
 import com.example.watdagam.databinding.ActivityPostBinding
 
@@ -25,15 +26,15 @@ class PostActivity : AppCompatActivity() {
         viewBinding = ActivityPostBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-        viewBinding.toolbarTitle.text = "$nickname 왔다감"
+        viewBinding.toolbarTitle.text = getString(R.string.toolbar_post_title, nickname)
         viewBinding.locationName.text = address
 
         viewBinding.textEdit.addTextChangedListener { editable: Editable? ->
             if (editable != null) {
-                viewBinding.textCount.text = "${editable.length}/100"
+                viewBinding.textCount.text = getString(R.string.post_text_count, editable.length)
             }
         }
-        viewBinding.textCount.text = "0/100"
+        viewBinding.textCount.text = getString(R.string.post_text_count, 0)
 
         viewBinding.post.setOnClickListener {
             if (viewBinding.textEdit.text.isNullOrBlank()) {
