@@ -20,6 +20,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
+import java.lang.Exception
 
 class ApiService private constructor() {
     companion object {
@@ -254,9 +255,9 @@ class ApiService private constructor() {
             return response.body()!!
         } else if (response.code() == 401){
             requestLogin(context)
-            throw RuntimeException("Invalid access token")
+            throw Exception("Invalid access token")
         }
-        throw RuntimeException("Unhandled Code (userinfo) ${response.code()}")
+        throw Exception("Unhandled Code (userinfo) ${response.code()}")
     }
 
     interface StoryService {
