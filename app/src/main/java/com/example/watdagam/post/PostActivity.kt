@@ -26,7 +26,7 @@ class PostActivity : AppCompatActivity() {
         viewBinding = ActivityPostBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
-        viewBinding.toolbarTitle.text = getString(R.string.toolbar_post_title, nickname)
+        viewBinding.toolbarTitle.text = getString(R.string.toolbar_title_post, nickname)
         viewBinding.locationName.text = address
 
         viewBinding.textEdit.addTextChangedListener { editable: Editable? ->

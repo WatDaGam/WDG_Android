@@ -15,14 +15,8 @@
     <string name="navigation_title_post">글쓰기</string>
     <string name="navigation_title_my_page">마이페이지</string>
 
-    <string name="menu_item_logout">로그아웃</string>
-    <string name="menu_item_withdrawal">회원탈퇴</string>
-
     <string name="profile_post">남긴 글</string>
     <string name="profile_like">좋아요</string>
-
-    <string name="tag_my_post">내가 남긴 글</string>
-    <string name="tag_my_like">좋아요 누른 글</string>
 
     <string name="post_cancel">취소</string>
     <string name="post_text_hint">남길 메세지를 입력해주세요</string>
@@ -30,7 +24,12 @@
     <string name="post_send">남기기</string>
 
     <string name="toolbar_back">뒤로가기</string>
-    <string name="toolbar_post_title">%s 왔다감</string>
+    <string name="toolbar_title_post">%s 왔다감</string>
+    <string name="toolbar_title_my_page">마이페이지</string>
+
+    <string name="my_page_profile">프로필</string>
+    <string name="my_page_logout">로그아웃</string>
+    <string name="my_page_withdraw">회원탈퇴</string>
 
 
 </resources>
