@@ -26,7 +26,7 @@
 
     <string name="post_cancel">취소</string>
     <string name="post_text_hint">남길 메세지를 입력해주세요</string>
-    <string name="post_text_count">%i/100</string>
+    <string name="post_text_count">%d/100</string>
     <string name="post_send">남기기</string>
 
     <string name="toolbar_back">뒤로가기</string>
