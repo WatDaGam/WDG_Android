@@ -8,6 +8,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
+import com.example.watdagam.api.ApiService
 import com.example.watdagam.databinding.ActivityPostBinding
 
 class PostActivity : AppCompatActivity() {
@@ -20,9 +21,11 @@ class PostActivity : AppCompatActivity() {
         val address = intent.extras?.getString("KEY_WDG_ADDRESS") ?: ""
         val latitude = intent.extras?.getDouble("KEY_WDG_LATITUDE") ?: 0.0
         val longitude = intent.extras?.getDouble("KEY_WDG_LONGITUDE") ?: 0.0
+        val nickname = ApiService.user_data_pref.nickname ?: ""
         viewBinding = ActivityPostBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
+        viewBinding.toolbarTitle.text = "$nickname 왔다감"
         viewBinding.locationName.text = address
 
         viewBinding.textEdit.addTextChangedListener { editable: Editable? ->
