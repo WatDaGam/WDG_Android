@@ -1,4 +1,4 @@
-package com.example.watdagam.api
+package com.example.watdagam.storage
 
 import android.content.Context
 import android.util.Log

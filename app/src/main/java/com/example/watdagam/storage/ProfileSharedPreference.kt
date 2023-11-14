@@ -1,9 +1,9 @@
-package com.example.watdagam.api
+package com.example.watdagam.storage
 
 import android.content.Context
 import android.content.SharedPreferences
 
-class UserDataSharedPreference (context: Context) {
+class ProfileSharedPreference (context: Context) {
 
     companion object {
         private const val PREFERENCE_FILENAME = "user-data-preference"

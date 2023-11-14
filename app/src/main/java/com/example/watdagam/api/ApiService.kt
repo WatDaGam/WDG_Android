@@ -7,6 +7,8 @@ import android.util.Log
 import com.example.watdagam.LoginActivity
 import com.example.watdagam.data.PostDto
 import com.example.watdagam.data.UserInfo
+import com.example.watdagam.storage.TokenSharedPreference
+import com.example.watdagam.storage.ProfileSharedPreference
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -23,7 +25,7 @@ class ApiService private constructor() {
     companion object {
         private var instance: ApiService? = null
         lateinit var token_pref: TokenSharedPreference
-        lateinit var user_data_pref: UserDataSharedPreference
+        lateinit var user_data_pref: ProfileSharedPreference
 
         private const val TAG = "WDG_API"
 //        private const val BASE_URL: String = "http://43.202.3.132:8080"
@@ -39,7 +41,7 @@ class ApiService private constructor() {
         fun getInstance(applicationContext: Context): ApiService {
             return instance ?: ApiService().also {
                 token_pref = TokenSharedPreference(applicationContext)
-                user_data_pref = UserDataSharedPreference(applicationContext)
+                user_data_pref = ProfileSharedPreference(applicationContext)
                 instance = it
             }
         }
