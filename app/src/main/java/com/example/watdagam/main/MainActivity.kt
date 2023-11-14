@@ -1,6 +1,5 @@
 package com.example.watdagam.main
 
-import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -9,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.watdagam.R
 import com.example.watdagam.databinding.ActivityMainBinding
-import com.example.watdagam.post.PostActivity
 
 private const val TAG_LIST = "list_fragment"
 private const val TAG_MY_PAGE = "my_page_fragment"
@@ -47,14 +45,7 @@ class MainActivity : AppCompatActivity() {
                         model.setListAddress(this, currentLocation)
                     setFragment(TAG_LIST, ListFragment())
                 }
-                R.id.postFragment -> {
-                    val address = model.getListAddress().value!!
-                    val intent = Intent(this.applicationContext, PostActivity::class.java)
-                    intent.putExtra("KEY_WDG_ADDRESS", address.locality)
-                    intent.putExtra("KEY_WDG_LATITUDE", address.latitude)
-                    intent.putExtra("KEY_WDG_LONGITUDE", address.longitude)
-                    startActivity(intent)
-                }
+                R.id.postFragment -> model.startPostActivity(this)
                 R.id.myPageFragment -> setFragment(TAG_MY_PAGE, MyPageFragment())
             }
             true

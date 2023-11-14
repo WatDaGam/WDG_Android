@@ -18,6 +18,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.watdagam.LoginActivity
 import com.example.watdagam.api.ApiService
 import com.example.watdagam.data.UserInfo
+import com.example.watdagam.post.PostActivity
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -185,5 +186,77 @@ class MainActivityViewModel: ViewModel() {
             _listAddress.postValue(unknownAddress)
             Log.e(TAG, "지명을 가져올 수 없습니다.")
         }
+    }
+
+    fun startPostActivity(activity: Activity) {
+        if (
+            ActivityCompat.checkSelfPermission(
+                activity.applicationContext,
+                LOCATION_PERMISSIONS[0],
+            ) == PackageManager.PERMISSION_DENIED ||
+            ActivityCompat.checkSelfPermission(
+                activity.applicationContext,
+                LOCATION_PERMISSIONS[1],
+            ) == PackageManager.PERMISSION_DENIED
+        ) {
+            Toast.makeText(
+                activity.applicationContext,
+                "앱을 사용하기 위해서는 자세한 위치 사용 권한이 필요합니다.",
+                Toast.LENGTH_SHORT
+            ).show()
+            ActivityCompat.requestPermissions(
+                activity,
+                LOCATION_PERMISSIONS,
+                REQUEST_LOCATION
+            )
+        } else {
+            viewModelScope.launch {
+                val client = LocationServices.getFusedLocationProviderClient(activity)
+                client.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                    .addOnSuccessListener { location ->
+                        lateinit var address: Address
+                        try {
+                            val geocoder = Geocoder(activity, Locale.KOREA)
+                            val addressList = geocoder.getFromLocation(
+                                location.latitude,
+                                location.longitude,
+                                1
+                            ) as List<Address>
+                            address = addressList[0]
+                        } catch (e: IOException) {
+                            address = Address(Locale.KOREA)
+                            address.latitude = location.latitude
+                            address.longitude = location.longitude
+                            address.countryName = "???"
+                            Log.e(TAG, "지명을 가져올 수 없습니다.")
+                        } finally {
+                            val intent = Intent(activity, PostActivity::class.java)
+                            val locationName = getLocationName(address)
+                            intent.putExtra("KEY_WDG_ADDRESS", locationName)
+                            intent.putExtra("KEY_WDG_LATITUDE", address.latitude)
+                            intent.putExtra("KEY_WDG_LONGITUDE", address.longitude)
+                            activity.startActivity(intent)
+                        }
+                    }
+            }
+        }
+    }
+
+    fun getLocationName(address: Address): String {
+        val name =
+        if (!address.thoroughfare.isNullOrBlank()) {
+            address.thoroughfare
+        } else if (!address.subLocality.isNullOrBlank()) {
+            address.subLocality
+        } else if (!address.locality.isNullOrBlank()) {
+            address.locality
+        } else if (!address.subAdminArea.isNullOrBlank()) {
+            address.subAdminArea
+        } else if (!address.adminArea.isNullOrBlank()) {
+            address.adminArea
+        } else {
+            address.countryName
+        }
+        return name
     }
 }
