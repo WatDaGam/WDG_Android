@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 class ProfileSharedPreference (context: Context) {
 
     companion object {
-        private const val PREFERENCE_FILENAME = "user-data-preference"
+        private const val PREFERENCE_FILENAME = "wdg-user-data-preference"
         private const val KEY_NICKNAME = "key-nickname"
         private const val KEY_POSTS = "key-posts"
         private const val KEY_LIKES = "key-likes"

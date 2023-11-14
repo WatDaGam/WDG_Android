@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import java.time.Instant
+import java.time.ZoneId
 
 class TokenSharedPreference(context: Context) {
 
@@ -54,7 +56,9 @@ class TokenSharedPreference(context: Context) {
     fun setAccessToken(token: String, expTime: Long) {
         _accessToken = token
         _accessTokenExpirationTime = expTime
-        Log.d(TAG, "access token: $token expire at $expTime")
+        val expLocalDateTime = Instant.ofEpochMilli(expTime)
+            .atZone(ZoneId.systemDefault()).toLocalDateTime()
+        Log.d(TAG, "access token: $token expire at $expLocalDateTime")
     }
 
     fun getRefreshToken(): String {
@@ -69,6 +73,8 @@ class TokenSharedPreference(context: Context) {
     fun setRefreshToken(token: String, expTime: Long) {
         _refreshToken = token
         _refreshTokenExpirationTime = expTime
-        Log.d(TAG, "refresh token: $token expire at $expTime")
+        val expLocalDateTime = Instant.ofEpochMilli(expTime)
+            .atZone(ZoneId.systemDefault()).toLocalDateTime()
+        Log.d(TAG, "refresh token: $token expire at $expLocalDateTime")
     }
 }
