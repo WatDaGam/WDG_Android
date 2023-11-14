@@ -1,16 +1,14 @@
 package com.example.watdagam.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import com.example.watdagam.R
 import com.example.watdagam.databinding.FragmentMyPageBinding
+import com.example.watdagam.profile.ProfileActivity
 
 class MyPageFragment : Fragment() {
     private lateinit var viewBinding: FragmentMyPageBinding
@@ -25,43 +23,20 @@ class MyPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         viewBinding = FragmentMyPageBinding.inflate(inflater, container, false)
-        model.getProfile().observe(viewLifecycleOwner) { profile ->
-            viewBinding.toolbarTitle.text = profile.nickname
-            viewBinding.profilePostsNumber.text = profile.post.toString()
-            viewBinding.profileLikesNumber.text = profile.likes.toString()
+
+        viewBinding.buttonProfile.setOnClickListener{
+            val intent = Intent(requireContext(), ProfileActivity::class.java)
+            startActivity(intent)
         }
 
-        model.loadProfile(requireContext())
-
-        // Menu
-        viewBinding.toolbar.overflowIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_menu)
-        viewBinding.toolbar.inflateMenu(R.menu.my_page_menu)
-        viewBinding.toolbar.setOnMenuItemClickListener { item: MenuItem ->
-            when (item.itemId) {
-                R.id.logoutButton -> {
-                    model.logout(requireContext())
-                    true
-                }
-                R.id.withdrawalButton -> {
-                    val builder = AlertDialog.Builder(requireContext())
-                        .setMessage("정말로 회원 탈퇴하시겠습니까?")
-                        .setPositiveButton("네") { _, _ ->
-                            model.withdraw(requireContext())
-                        }
-                        .setNegativeButton("아니요", null)
-                    builder.create().show()
-                    true
-                }
-                else -> false
-            }
+        viewBinding.buttonLogout.setOnClickListener{
+            model.logout(requireContext())
         }
 
-        // Back
-        viewBinding.toolbar.setNavigationOnClickListener { view ->
-            TODO("move backward")
+        viewBinding.buttonWithdraw.setOnClickListener{
+            model.withdraw(requireContext())
         }
+
         return viewBinding.root
     }
-
-
 }

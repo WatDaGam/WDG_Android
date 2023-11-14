@@ -11,13 +11,13 @@ import android.location.Location
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.watdagam.LoginActivity
 import com.example.watdagam.api.ApiService
-import com.example.watdagam.data.UserInfo
 import com.example.watdagam.post.PostActivity
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -30,51 +30,33 @@ import java.util.Locale
 
 class MainActivityViewModel: ViewModel() {
 
-    private val _profile = MutableLiveData(UserInfo("", 0, 0))
-    fun getProfile(): MutableLiveData<UserInfo> {
-        return _profile
-    }
-
-    fun loadProfile(context: Context) {
-        val cachedProfile = UserInfo(
-            ApiService.user_data_pref.nickname?: "",
-            ApiService.user_data_pref.posts,
-            ApiService.user_data_pref.likes
-        )
-        _profile.postValue(cachedProfile)
-        viewModelScope.launch {
-            try {
-                val apiService = ApiService.getInstance(context.applicationContext)
-                val updatedProfile = apiService.getUserInfo(context)
-                ApiService.user_data_pref.nickname = updatedProfile.nickname
-                ApiService.user_data_pref.posts = updatedProfile.post
-                ApiService.user_data_pref.likes = updatedProfile.likes
-                _profile.postValue(updatedProfile)
-            } catch (e: RuntimeException) {
-                Log.e("WDG_MY_PAGE", e.message ?: "(no error message)")
-            }
-        }
-    }
-
     fun logout(context: Context) {
         ApiService.token_pref.setAccessToken("", 0)
         ApiService.token_pref.setRefreshToken("", 0)
         val intent = Intent(context, LoginActivity::class.java)
         context.startActivity(intent)
+        Toast.makeText(context, "로그아웃 되었습니다", Toast.LENGTH_SHORT).show()
     }
 
     fun withdraw(context: Context) {
-        viewModelScope.launch {
-            try {
-                val apiService = ApiService.getInstance(context)
-                apiService.withdrawal(context)
-                Toast.makeText(context, "회원 탈퇴 되었습니다.", Toast.LENGTH_SHORT).show()
-                val intent = Intent(context, LoginActivity::class.java)
-                context.startActivity(intent)
-            } catch (e: RuntimeException) {
-                Log.e("WDG_MY_PAGE", e.message ?: "(no error message)")
+        val dialog = AlertDialog.Builder(context)
+            .setMessage("회원탈퇴 하시겠습니까?")
+            .setNegativeButton("아니요", null)
+            .setPositiveButton("네") {_, _ ->
+                viewModelScope.launch {
+                    try {
+                        val apiService = ApiService.getInstance(context)
+                        apiService.withdrawal(context)
+                        Toast.makeText(context, "회원 탈퇴 되었습니다.", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(context, LoginActivity::class.java)
+                        context.startActivity(intent)
+                    } catch (e: RuntimeException) {
+                        Log.e("WDG_MY_PAGE", e.message ?: "(no error message)")
+                    }
+                }
             }
-        }
+            .create()
+        dialog.show()
     }
 
     companion object {
