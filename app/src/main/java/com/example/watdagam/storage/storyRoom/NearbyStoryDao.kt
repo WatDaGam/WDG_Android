@@ -4,18 +4,22 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface NearbyStoryDao {
     @Query("SELECT * FROM nearbystory")
-    fun getAll(): List<MyStory>
+    fun getAll(): List<NearbyStory>
 
-    @Query("SELECT * FROM nearbystory WHERE id IN (:storyId)")
-    fun loadAllByIds(storyId: Int): List<MyStory>
+    @Query("DELETE FROM nearbystory")
+    fun deleteAll()
 
     @Insert
-    fun insertAll(vararg users: MyStory)
+    fun insertStory(vararg story: NearbyStory)
+
+    @Update
+    fun updateStory(story: NearbyStory)
 
     @Delete
-    fun delete(user: MyStory)
+    fun delete(story: NearbyStory)
 }

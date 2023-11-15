@@ -4,18 +4,22 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 
 @Dao
 interface MyStoryDao {
     @Query("SELECT * FROM mystory")
     fun getAll(): List<MyStory>
 
-    @Query("SELECT * FROM mystory WHERE id IN (:storyId)")
-    fun loadAllByIds(storyId: Int): List<MyStory>
+    @Query("DELETE FROM mystory")
+    fun deleteAll()
 
     @Insert
-    fun insertAll(vararg users: MyStory)
+    fun insertStory(vararg story: MyStory)
+
+    @Update
+    fun updateStory(story: MyStory)
 
     @Delete
-    fun delete(user: MyStory)
+    fun delete(story: MyStory)
 }

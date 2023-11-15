@@ -31,7 +31,7 @@ class StorageService {
 
     fun getTokenService(): TokenSharedPreference = _token_pref
     fun getProfileService(): ProfileSharedPreference = _profile_pref
-    fun getMyStoryDao(): NearbyStoryDao = _storyDB.nearbyStoryDao()
-    fun getNearStoryDao(): MyStoryDao = _storyDB.myStoryDao()
+    fun getNearbyStoryDao(): NearbyStoryDao = _storyDB.nearbyStoryDao()
+    fun getMyStoryDao(): MyStoryDao = _storyDB.myStoryDao()
 
 }
