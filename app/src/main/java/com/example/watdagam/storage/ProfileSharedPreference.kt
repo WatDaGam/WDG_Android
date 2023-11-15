@@ -23,6 +23,6 @@ class ProfileSharedPreference (context: Context) {
 
     var likes: Int
         get() = preferences.getInt(KEY_LIKES, 0)
-        set(value) = preferences.edit().putInt(KEY_NICKNAME, value).apply()
+        set(value) = preferences.edit().putInt(KEY_LIKES, value).apply()
 
 }
