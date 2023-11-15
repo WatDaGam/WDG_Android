@@ -1,4 +1,4 @@
-package com.example.watdagam
+package com.example.watdagam.storyList
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -6,22 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.example.watdagam.data.Story
 import com.example.watdagam.databinding.ListItemStoryBinding
 
-class StoryAdapter(val datas: List<Story>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class StoryAdapter(val datas: List<StoryItem>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun getItemCount(): Int = datas.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         StoryViewHolder(ListItemStoryBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        Log.d("WDG_ADAPTER", "onBindViewHolder: $position")
         val binding = (holder as StoryViewHolder).binding
         val story = datas[position]
 
         binding.message.text = story.content
-        binding.likes.text = story.likeNum.toString()
+        binding.likes.text = story.likes.toString()
         binding.distance.text = story.distance.toString()
 
         binding.container.setOnClickListener { view: View ->

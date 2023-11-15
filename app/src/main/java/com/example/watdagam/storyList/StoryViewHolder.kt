@@ -1,4 +1,4 @@
-package com.example.watdagam
+package com.example.watdagam.storyList
 
 import androidx.recyclerview.widget.RecyclerView
 import com.example.watdagam.databinding.ListItemStoryBinding

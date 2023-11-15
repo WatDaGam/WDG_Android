@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.watdagam.data.Story
-import com.example.watdagam.StoryAdapter
+import com.example.watdagam.storyList.StoryItem
+import com.example.watdagam.storyList.StoryAdapter
 import com.example.watdagam.data.StoryDto
 import com.example.watdagam.databinding.FragmentListBinding
 import java.util.Date
@@ -71,19 +71,19 @@ class ListFragment : Fragment() {
             viewBinding.toolbarGps.text = gpsText
         }
 
-        val storyList = mutableListOf<Story>()
+        val storyList = mutableListOf<StoryItem>()
         for (story in storyDtoList) {
-            storyList.add(Story(
-                story.createdAt,
-                story.lati,
-                story.longi,
-                story.nickname,
-                story.id,
-                story.userId,
-                story.content,
-                story.likeNum,
-                0.0
-            ))
+            storyList.add(
+                StoryItem(
+                    story.id,
+                    story.nickname,
+                    story.lati,
+                    story.longi,
+                    story.content,
+                    story.likeNum,
+                    0.0
+                )
+            )
         }
         viewBinding.storyList.layoutManager = LinearLayoutManager(requireContext())
         viewBinding.storyList.adapter = StoryAdapter(storyList)
