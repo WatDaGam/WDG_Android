@@ -3,6 +3,9 @@ package com.example.watdagam.profile
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.watdagam.storyList.StoryAdapter
 import com.example.watdagam.databinding.ActivityProfileBinding
 
 class ProfileActivity : AppCompatActivity() {
@@ -24,10 +27,16 @@ class ProfileActivity : AppCompatActivity() {
             viewBinding.profileLikesNumber.text = likes.toString()
         }
 
+        viewBinding.myStoryList.layoutManager = LinearLayoutManager(this)
+        viewBinding.myStoryList.addItemDecoration((DividerItemDecoration(this, LinearLayoutManager.VERTICAL)))
+        model.getMyStoryList().observe(this) { storyList ->
+            viewBinding.myStoryList.adapter = StoryAdapter(storyList)
+        }
+
         viewBinding.toolbarBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        model.loadProfile(this.applicationContext)
+        model.loadData(this.applicationContext)
     }
 }
