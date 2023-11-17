@@ -3,7 +3,6 @@ package com.example.watdagam.storage
 import android.content.Context
 import androidx.room.Room
 import com.example.watdagam.storage.storyRoom.MyStoryDao
-import com.example.watdagam.storage.storyRoom.NearbyStoryDao
 import com.example.watdagam.storage.storyRoom.StoryDatabase
 
 class StorageService {
@@ -12,8 +11,6 @@ class StorageService {
         private lateinit var _token_pref: TokenSharedPreference
         private lateinit var _profile_pref: ProfileSharedPreference
         private lateinit var _storyDB: StoryDatabase
-
-        private const val TAG = "WDG_storage_service"
 
         fun getInstance(applicationContext: Context): StorageService {
             return instance ?: StorageService().also { it ->
@@ -31,7 +28,6 @@ class StorageService {
 
     fun getTokenService(): TokenSharedPreference = _token_pref
     fun getProfileService(): ProfileSharedPreference = _profile_pref
-    fun getNearbyStoryDao(): NearbyStoryDao = _storyDB.nearbyStoryDao()
     fun getMyStoryDao(): MyStoryDao = _storyDB.myStoryDao()
 
 }
