@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.watdagam.storyList.StoryItem
 import com.example.watdagam.storyList.StoryAdapter
 import com.example.watdagam.databinding.FragmentListBinding
 
@@ -46,10 +45,11 @@ class ListFragment : Fragment() {
             viewBinding.toolbarGps.text = gpsText
         }
 
-        val storyList = mutableListOf<StoryItem>()
         viewBinding.storyList.layoutManager = LinearLayoutManager(requireContext())
-        viewBinding.storyList.adapter = StoryAdapter(storyList)
         viewBinding.storyList.addItemDecoration((DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)))
+        model.getStoryList().observe(requireActivity()) { list ->
+            viewBinding.storyList.adapter = StoryAdapter(list)
+        }
 
         return viewBinding.root
     }
