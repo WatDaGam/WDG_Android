@@ -44,7 +44,7 @@ class WDGUserService {
             @Body nickname: String,
         ): Response<Void>
 
-        @GET("userinfo")
+        @GET("userInfo")
         suspend fun userinfo(
             @Header("Authorization") token: String,
         ): Response<UserInfo>
