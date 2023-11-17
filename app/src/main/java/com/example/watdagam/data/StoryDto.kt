@@ -1,9 +1,7 @@
 package com.example.watdagam.data
 
-import java.util.Date
-
 data class StoryDto (
-    val createdAt: Date,
+    val createdAt: String,
     val lati: Double,
     val longi: Double,
     val nickname: String,
