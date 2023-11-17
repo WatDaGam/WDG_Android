@@ -34,7 +34,7 @@ class LoginActivity : AppCompatActivity() {
             play(ObjectAnimator.ofFloat(logo, "translationY", -300f).apply {
                 startDelay = 1000
                 duration = 1500
-            }).before(ObjectAnimator.ofFloat(containerLoginButtons, View.ALPHA, 0f, 1f).apply {
+            }).before(ObjectAnimator.ofFloat(containerLoginButtons, View.ALPHA,  1f).apply {
                 startDelay = 500
                 duration = 500
             })
