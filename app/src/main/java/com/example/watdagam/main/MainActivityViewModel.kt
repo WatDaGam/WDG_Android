@@ -19,10 +19,12 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.watdagam.api.WDGStoryService
 import com.example.watdagam.api.WDGUserService
 import com.example.watdagam.login.LoginActivity
 import com.example.watdagam.post.PostActivity
 import com.example.watdagam.storage.StorageService
+import com.example.watdagam.storyList.StoryItem
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -77,6 +79,23 @@ class MainActivityViewModel: ViewModel() {
 
     fun setLastLocation(context: Context, location: Location) {
         _lastLocation.postValue(location)
+        val lastStoryList = _storyList.value
+        if (lastStoryList != null) {
+            val distance = FloatArray(3)
+            val newStoryList = lastStoryList!!.map { story ->
+                Location.distanceBetween(location.latitude, location.longitude, story.latitude, story.longitude, distance)
+                StoryItem(
+                    story.id,
+                    story.nickname,
+                    story.latitude,
+                    story.longitude,
+                    story.content,
+                    story.likes,
+                    distance[0].toDouble()
+                )
+            }
+            _storyList.postValue(newStoryList)
+        }
         val geocoder = Geocoder(context, Locale.KOREA)
         if (Build.VERSION.SDK_INT < 33) {
             val addressList = geocoder.getFromLocation(location.latitude, location.longitude, 1)
@@ -200,5 +219,36 @@ class MainActivityViewModel: ViewModel() {
             address.countryName
         }
         return name
+    }
+
+    private val _storyList: MutableLiveData<List<StoryItem>> by lazy {
+        MutableLiveData<List<StoryItem>>()
+    }
+    fun getStoryList(): MutableLiveData<List<StoryItem>> = _storyList
+
+    fun loadStoryList(context: Context) {
+        viewModelScope.launch {
+            try {
+                val location = _lastLocation.value ?: throw Exception("Cannot fetch location")
+                val storyList = WDGStoryService.getStoryList(context, location.latitude, location.longitude).body()?.stories ?: throw Exception("Cannot fetch story list")
+                val distance = FloatArray(3)
+                val storyItemList = storyList.map { storyDto ->
+                    Location.distanceBetween(location.latitude, location.longitude, storyDto.lati, storyDto.longi, distance)
+                    StoryItem(
+                        storyDto.id,
+                        storyDto.nickname,
+                        storyDto.lati,
+                        storyDto.longi,
+                        storyDto.content,
+                        storyDto.likeNum,
+                        distance[0].toDouble()
+                    )
+                }
+                _storyList.postValue(storyItemList)
+            } catch (e: Exception) {
+                Log.e(TAG, "${e.message} ${e.cause}")
+                Toast.makeText(context, "서버로부터 데이터를 동기화하지 못했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
