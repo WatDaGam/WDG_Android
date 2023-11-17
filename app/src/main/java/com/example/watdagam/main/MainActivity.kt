@@ -39,11 +39,13 @@ class MainActivity : AppCompatActivity() {
         } else {
             model.startLocationTracking(this)
         }
+        model.reloadLocation(this)
 
         binding.navigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.listFragment -> {
                     model.reloadLocation(this)
+                    model.loadStoryList(this)
                     setFragment(TAG_LIST, ListFragment())
                 }
                 R.id.postFragment -> model.startPostActivity(this)
