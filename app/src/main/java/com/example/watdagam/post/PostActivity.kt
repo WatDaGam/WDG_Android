@@ -9,8 +9,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
 import com.example.watdagam.R
-import com.example.watdagam.api.ApiService
 import com.example.watdagam.databinding.ActivityPostBinding
+import com.example.watdagam.storage.StorageService
 
 class PostActivity : AppCompatActivity() {
 
@@ -22,7 +22,7 @@ class PostActivity : AppCompatActivity() {
         val address = intent.extras?.getString("KEY_WDG_ADDRESS") ?: ""
         val latitude = intent.extras?.getDouble("KEY_WDG_LATITUDE") ?: 0.0
         val longitude = intent.extras?.getDouble("KEY_WDG_LONGITUDE") ?: 0.0
-        val nickname = ApiService.user_data_pref.nickname ?: ""
+        val nickname = StorageService.getInstance(this).getProfileService().nickname
         viewBinding = ActivityPostBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 

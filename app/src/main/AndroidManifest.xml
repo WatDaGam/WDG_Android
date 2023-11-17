@@ -24,7 +24,7 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" /> <!-- Activities -->
         <activity
-            android:name=".Intro.IntroActivity"
+            android:name=".login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,9 +36,6 @@
             android:name=".main.MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false" />
         <activity
             android:name=".Signup.SignupActivity"
             android:exported="false"

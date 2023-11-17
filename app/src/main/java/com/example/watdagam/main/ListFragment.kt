@@ -52,7 +52,7 @@ class ListFragment : Fragment() {
     ): View {
         viewBinding = FragmentListBinding.inflate(inflater, container, false)
 
-        model.getListAddress().observe(requireActivity()) { address: Address ->
+        model.getLastAddress().observe(requireActivity()) { address: Address ->
             viewBinding.toolbarPlaceName.text =
                 if (!address.thoroughfare.isNullOrBlank()) {
                     address.thoroughfare
@@ -88,8 +88,6 @@ class ListFragment : Fragment() {
         viewBinding.storyList.layoutManager = LinearLayoutManager(requireContext())
         viewBinding.storyList.adapter = StoryAdapter(storyList)
         viewBinding.storyList.addItemDecoration((DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)))
-
-        model.reloadLocation(requireActivity())
 
         return viewBinding.root
     }

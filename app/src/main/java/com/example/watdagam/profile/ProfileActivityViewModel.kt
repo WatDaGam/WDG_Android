@@ -6,16 +6,15 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.watdagam.api.ApiService
+import com.example.watdagam.api.WDGStoryService
+import com.example.watdagam.api.WDGUserService
 import com.example.watdagam.storyList.StoryItem
 import com.example.watdagam.data.StoryDto
-import com.example.watdagam.data.UserInfo
 import com.example.watdagam.storage.StorageService
 import com.example.watdagam.storage.storyRoom.MyStory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.Date
 
 class ProfileActivityViewModel: ViewModel() {
     companion object {
@@ -57,26 +56,8 @@ class ProfileActivityViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 // API를 통해 서버의 데이터 동기화
-//                val apiService = ApiService.getInstance(context)
-//                val profile = apiService.getUserInfo(context)
-//                val myStoryData = apiService.getMyStory(content)
-                val profile = UserInfo(
-                    "sangkkim",
-                    10,
-                    1,
-                )
-                val myStoryData = List<StoryDto>(10) { idx ->
-                    StoryDto(
-                        Date(),
-                        0.0,
-                        0.0,
-                        "sangkkim",
-                        idx.toLong(),
-                        1,
-                        "content no.$idx",
-                        idx * 132 % 31
-                    )
-                }
+                val profile = WDGUserService.getUserInfo(context).body() ?: throw Exception("Cannot fetch user info")
+                val myStoryList = WDGStoryService.getMyStoryList(context).body()?.stories ?: throw Exception("Cannot fetch my story list")
 
                 // Shared Preference 갱신
                 profileService.nickname = profile.nickname
@@ -90,7 +71,7 @@ class ProfileActivityViewModel: ViewModel() {
                 // Room DB 갱신
                 CoroutineScope(Dispatchers.IO).launch {
                     myStoryDao.deleteAll()
-                    myStoryData.forEach { storyDto ->
+                    myStoryList.forEach { storyDto ->
                         myStoryDao.insertStory(storyDtoToMyStory(storyDto))
                     }
                     _myStoryList.postValue(myStoryListToStoryItemList(myStoryDao.getAll()))

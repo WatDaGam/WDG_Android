@@ -1,9 +1,12 @@
 package com.example.watdagam.main
 
-import android.location.Location
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.watdagam.R
@@ -23,26 +26,24 @@ class MainActivity : AppCompatActivity() {
 
         setFragment(TAG_LIST, ListFragment())
 
-        model.getCurrentLocation().observe(this) { currentLocation: Location ->
-            val lastLocationLiveData = model.getLastLocation()
-            if (lastLocationLiveData.value == null) {
-                model.setListAddress(this.applicationContext, currentLocation)
-            } else {
-                val distance = currentLocation.distanceTo(lastLocationLiveData.value!!)
-                if (distance > 30.0) {
-                    model.setListAddress(this.applicationContext, currentLocation)
-                }
-            }
+        val fineLocationPermission = ActivityCompat.checkSelfPermission(this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        val coarseLocationPermission = ActivityCompat.checkSelfPermission(this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+        if (fineLocationPermission == PackageManager.PERMISSION_DENIED ||
+            coarseLocationPermission == PackageManager.PERMISSION_DENIED) {
+            Toast.makeText(this, "글을 남기기 위해서는 자세한 위치 사용 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            model.requestLocationPermissions(this)
+        } else {
+            model.startLocationTracking(this)
         }
 
-        model.startLocationTracking(this)
-
         binding.navigationView.setOnItemSelectedListener { item ->
-            val currentLocation = model.getCurrentLocation().value
             when (item.itemId) {
                 R.id.listFragment -> {
-                    if (currentLocation != null)
-                        model.setListAddress(this, currentLocation)
+                    model.reloadLocation(this)
                     setFragment(TAG_LIST, ListFragment())
                 }
                 R.id.postFragment -> model.startPostActivity(this)
@@ -78,7 +79,6 @@ class MainActivity : AppCompatActivity() {
             TAG_MY_PAGE -> {
                 if (myPage != null)
                     fragTransaction.show(myPage)
-
             }
         }
         fragTransaction.commitAllowingStateLoss()
