@@ -88,6 +88,7 @@ class WDGStoryService {
             val response = storyApi.getStory("Bearer $accessToken", storyId)
             Log.d(TAG, "Get response story/get\n" + response.raw().toString())
             if (response.code() == 401) {
+                WDGUserService.requestLogin(context)
                 throw Exception("Not Valid Token")
             }
             return response
@@ -101,6 +102,7 @@ class WDGStoryService {
             val response = storyApi.deleteStory("Bearer $accessToken", storyId)
             Log.d(TAG, "Get response story/delete\n" + response.raw().toString())
             if (response.code() == 401) {
+                WDGUserService.requestLogin(context)
                 throw Exception("Not Valid Token")
             }
             return response
@@ -116,6 +118,7 @@ class WDGStoryService {
             val response = storyApi.getStoryList("Bearer $accessToken", locationDto)
             Log.d(TAG, "Get response storyList/renew\n" + response.raw().toString())
             if (response.code() == 401) {
+                WDGUserService.requestLogin(context)
                 throw Exception("Not Valid Token")
             }
             return response
@@ -129,6 +132,7 @@ class WDGStoryService {
             val response = storyApi.likeStory("Bearer $accessToken", storyId)
             Log.d(TAG, "Get response like/add\n" + response.raw().toString())
             if (response.code() == 401) {
+                WDGUserService.requestLogin(context)
                 throw Exception("Not Valid Token")
             }
             return response
@@ -141,6 +145,7 @@ class WDGStoryService {
             val response = storyApi.getMyStoryList("Bearer $accessToken")
             Log.d(TAG, "Get response myStory\n" + response.raw().toString())
             if (response.code() == 401) {
+                WDGUserService.requestLogin(context)
                 throw Exception("Not Valid Token")
             }
             return response

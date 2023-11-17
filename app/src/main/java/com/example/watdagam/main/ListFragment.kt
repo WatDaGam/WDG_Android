@@ -11,9 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.watdagam.storyList.StoryItem
 import com.example.watdagam.storyList.StoryAdapter
-import com.example.watdagam.data.StoryDto
 import com.example.watdagam.databinding.FragmentListBinding
-import java.util.Date
 
 class ListFragment : Fragment() {
     private lateinit var viewBinding: FragmentListBinding
@@ -22,29 +20,6 @@ class ListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
-
-    private val storyDtoList = arrayListOf(
-        StoryDto(Date(0), 32.1231231, 127.12312312,
-            "yback", 0, 3, "This is a content1, This is a content1, This is a.", 0),
-        StoryDto(Date(0), 32.1231231, 127.12312312,
-            "yback", 1, 3, "This is a content2", 0),
-        StoryDto(Date(0), 32.1231231, 127.12312312,
-            "yback", 2, 3, "This is a content3", 0),
-        StoryDto(Date(0), 32.1231231, 127.12312312,
-            "yback", 3, 3, "This is a content4", 0),
-        StoryDto(Date(0), 32.1231231, 127.12312312,
-            "yback", 4, 3, "This is a content5", 0),
-        StoryDto(Date(0), 32.1231231, 127.12312312,
-            "yback", 5, 3, "This is a content6", 0),
-        StoryDto(Date(0), 32.1231231, 127.12312312,
-            "yback", 6, 3, "This is a content7", 0),
-        StoryDto(Date(0), 32.1231231, 127.12312312,
-            "yback", 7, 3, "This is a content8", 0),
-        StoryDto(Date(0), 32.1231231, 127.12312312,
-            "yback", 8, 3, "This is a content9", 0),
-        StoryDto(Date(0), 32.1231231, 127.12312312,
-            "yback", 9, 3, "This is a content10", 0),
-    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,19 +47,6 @@ class ListFragment : Fragment() {
         }
 
         val storyList = mutableListOf<StoryItem>()
-        for (story in storyDtoList) {
-            storyList.add(
-                StoryItem(
-                    story.id,
-                    story.nickname,
-                    story.lati,
-                    story.longi,
-                    story.content,
-                    story.likeNum,
-                    0.0
-                )
-            )
-        }
         viewBinding.storyList.layoutManager = LinearLayoutManager(requireContext())
         viewBinding.storyList.adapter = StoryAdapter(storyList)
         viewBinding.storyList.addItemDecoration((DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)))

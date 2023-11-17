@@ -77,4 +77,12 @@ class TokenSharedPreference(context: Context) {
             .atZone(ZoneId.systemDefault()).toLocalDateTime()
         Log.d(TAG, "refresh token: $token expire at $expLocalDateTime")
     }
+
+    fun expireTokens() {
+        _accessToken = ""
+        _accessTokenExpirationTime = 0
+        _refreshToken = ""
+        _refreshTokenExpirationTime = 0
+        Log.d(TAG, "both token expired by code")
+    }
 }

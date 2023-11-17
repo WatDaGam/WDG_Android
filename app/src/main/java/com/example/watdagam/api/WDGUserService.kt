@@ -1,8 +1,11 @@
 package com.example.watdagam.api
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
+import android.widget.Toast
 import com.example.watdagam.data.UserInfo
+import com.example.watdagam.login.LoginActivity
 import com.example.watdagam.storage.StorageService
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -87,6 +90,16 @@ class WDGUserService {
             return response
         }
 
+        fun requestLogin(
+            context: Context
+        ) {
+            val tokenService = StorageService.getInstance(context).getTokenService()
+            tokenService.expireTokens()
+            val intent = Intent(context, LoginActivity::class.java)
+            context.startActivity(intent)
+            Toast.makeText(context, "로그인 정보가 만료되었습니다. 다시 로그인해주세요.", Toast.LENGTH_SHORT).show()
+        }
+
         suspend fun getAccessToken(context: Context): String {
             val tokenService = StorageService.getInstance(context).getTokenService()
             val cachedToken = tokenService.getAccessToken()
@@ -95,14 +108,17 @@ class WDGUserService {
             }
             val refreshToken = tokenService.getRefreshToken()
             if (refreshToken.isEmpty()) {
+                requestLogin(context)
                 throw Exception("Not Valid Token")
             }
             val response = userApi.refreshToken(refreshToken)
             Log.d(TAG, "Get response refreshtoken\n" + response.raw().toString())
             if (response.code() == 401) {
+                requestLogin(context)
                 throw Exception("Not Valid Token")
             }
             if (response.headers()[KEY_ACCESS_TOKEN].toString().indexOf(" ") == -1) {
+                requestLogin(context)
                 throw Exception("No Access token")
             }
             val accessToken = response.headers()[KEY_ACCESS_TOKEN].toString().split(" ")[1]
@@ -118,6 +134,7 @@ class WDGUserService {
             val response = userApi.withdrawal("Bearer $accessToken")
             Log.d(TAG, "Get response withdrawal\n" + response.raw().toString())
             if (response.code() == 401) {
+                requestLogin(context)
                 throw Exception("Not Valid Token")
             }
             return response
@@ -130,6 +147,7 @@ class WDGUserService {
             val response = userApi.checkNickname("Bearer $accessToken", nickname)
             Log.d(TAG, "Get response nickname/check\n" + response.raw().toString())
             if (response.code() == 401) {
+                requestLogin(context)
                 throw Exception("Not Valid Token")
             }
             return response
@@ -143,6 +161,7 @@ class WDGUserService {
             val response = userApi.setNickname("Bearer $accessToken", nickname)
             Log.d(TAG, "Get response nickname/set\n" + response.raw().toString())
             if (response.code() == 401) {
+                requestLogin(context)
                 throw Exception("Not Valid Token")
             }
             return response
@@ -155,6 +174,7 @@ class WDGUserService {
             val response = userApi.userinfo("Bearer $accessToken")
             Log.d(TAG, "Get response userinfo\n" + response.raw().toString())
             if (response.code() == 401) {
+                requestLogin(context)
                 throw Exception("Not Valid Token")
             }
             return response
