@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.watdagam.storyList.StoryAdapter
 import com.example.watdagam.databinding.FragmentListBinding
+import com.example.watdagam.storyList.StoryAdapter
 
 class ListFragment : Fragment() {
     private lateinit var viewBinding: FragmentListBinding
