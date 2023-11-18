@@ -7,5 +7,5 @@ data class StoryItem(
     val longitude: Double,
     val content: String,
     val likes: Int,
-    val distance: Double
+    var distance: Double,
 )
