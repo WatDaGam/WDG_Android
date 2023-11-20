@@ -3,6 +3,7 @@ package com.example.watdagam.storyList
 import android.transition.AutoTransition
 import android.transition.Scene
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
@@ -10,8 +11,15 @@ import android.view.animation.Transformation
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.watdagam.R
+import com.example.watdagam.api.WDGStoryService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    companion object {
+        private const val TAG = "WDG_storyViewHolder"
+    }
 
     private lateinit var sceneRoot: ViewGroup
     private lateinit var foldedScene: Scene
@@ -49,6 +57,23 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         rebindView(itemView, story)
         title.setOnClickListener {
             foldItem(story)
+        }
+        content.setOnClickListener {
+            foldItem(story)
+        }
+        likes.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val response = WDGStoryService.addLike(itemView.context, story.id)
+                    if (response.isSuccessful) {
+                        story.likes += 1
+                    } else {
+                        throw Exception("Response is not Successful")
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "API Failed cause ${e.message} ${e.cause}")
+                }
+            }
         }
     }
 
