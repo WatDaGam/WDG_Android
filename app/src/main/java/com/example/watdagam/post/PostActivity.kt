@@ -3,7 +3,6 @@ package com.example.watdagam.post
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -19,37 +18,30 @@ class PostActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val address = intent.extras?.getString("KEY_WDG_ADDRESS") ?: ""
-        val latitude = intent.extras?.getDouble("KEY_WDG_LATITUDE") ?: 0.0
-        val longitude = intent.extras?.getDouble("KEY_WDG_LONGITUDE") ?: 0.0
         val nickname = StorageService.getInstance(this).getProfileService().nickname
         viewBinding = ActivityPostBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
 
         viewBinding.toolbarTitle.text = getString(R.string.toolbar_title_post, nickname)
-        viewBinding.locationName.text = address
-
+        viewBinding.textCount.text = getString(R.string.post_text_count, 0)
+        model.getAddress().observe(this) { address ->
+            viewBinding.locationName.text = address.featureName
+        }
         viewBinding.textEdit.addTextChangedListener { editable: Editable? ->
             if (editable != null) {
                 viewBinding.textCount.text = getString(R.string.post_text_count, editable.length)
             }
         }
-        viewBinding.textCount.text = getString(R.string.post_text_count, 0)
-
         viewBinding.post.setOnClickListener {
-            if (viewBinding.textEdit.text.isNullOrBlank()) {
-                Toast.makeText(this, "남길 내용이 없습니다.", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, viewBinding.textEdit.text.toString(), Toast.LENGTH_SHORT).show()
-                model.postStory(this.applicationContext, viewBinding.textEdit.text.toString(), latitude, longitude)
-            }
+            model.postStory(this, viewBinding.textEdit.text.toString())
         }
-
         viewBinding.toolbarBack.setOnClickListener {
             this.onBackPressedDispatcher.onBackPressed()
         }
 
         this.onBackPressedDispatcher.addCallback(this, backPressCallback)
+
+        model.updateAddress(this)
     }
 
     private val backPressCallback = object: OnBackPressedCallback(true) {
