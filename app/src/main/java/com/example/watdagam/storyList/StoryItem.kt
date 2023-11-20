@@ -8,4 +8,5 @@ data class StoryItem(
     val content: String,
     var likes: Int,
     var distance: Double,
+    var isExpanded: Boolean = false
 )

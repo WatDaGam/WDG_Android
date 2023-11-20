@@ -36,15 +36,19 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         sceneRoot = itemView.findViewById(R.id.scene_root)
         foldedScene = Scene.getSceneForLayout(sceneRoot, R.layout.scene_story_folded, itemView.context)
         expandedScene = Scene.getSceneForLayout(sceneRoot, R.layout.scene_story_expanded, itemView.context)
-        TransitionManager.go(foldedScene)
+        if (story.isExpanded) {
+            TransitionManager.go(expandedScene)
+            sceneRoot.layoutParams.height = (240 * sceneRoot.context.resources.displayMetrics.density).toInt()
+        } else {
+            TransitionManager.go(foldedScene)
+            sceneRoot.layoutParams.height = (90 * sceneRoot.context.resources.displayMetrics.density).toInt()
+        }
 
         rebindView(itemView, story)
-        title.setOnClickListener {
-            expandItem(story)
-        }
     }
 
     private fun expandItem(story: StoryItem) {
+        story.isExpanded = true
         TransitionManager.go(expandedScene, transition)
         val expandRoot = object: Animation() {
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
@@ -55,29 +59,10 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         }.also {it.duration = 100}
         itemView.startAnimation(expandRoot)
         rebindView(itemView, story)
-        title.setOnClickListener {
-            foldItem(story)
-        }
-        content.setOnClickListener {
-            foldItem(story)
-        }
-        likes.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val response = WDGStoryService.addLike(itemView.context, story.id)
-                    if (response.isSuccessful) {
-                        story.likes += 1
-                    } else {
-                        throw Exception("Response is not Successful")
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "API Failed cause ${e.message} ${e.cause}")
-                }
-            }
-        }
     }
 
     private fun foldItem(story: StoryItem) {
+        story.isExpanded = false
         TransitionManager.go(foldedScene, transition)
         val foldRoot = object: Animation() {
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
@@ -88,9 +73,6 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         }.also {it.duration = 150; it.startOffset = 150}
         itemView.startAnimation(foldRoot)
         rebindView(itemView, story)
-        title.setOnClickListener {
-            expandItem(story)
-        }
     }
 
     private fun rebindView(itemView: View, story: StoryItem) {
@@ -105,6 +87,33 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         content.text = story.content
         likes.text = getLikesString(story.likes)
         distance.text = getDistanceString(story.distance)
+
+        if (story.isExpanded) {
+            title.setOnClickListener {
+                foldItem(story)
+            }
+            content.setOnClickListener {
+                foldItem(story)
+            }
+            likes.setOnClickListener {
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val response = WDGStoryService.addLike(itemView.context, story.id)
+                        if (response.isSuccessful) {
+                            story.likes += 1
+                        } else {
+                            throw Exception("Response is not Successful")
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "API Failed cause ${e.message} ${e.cause}")
+                    }
+                }
+            }
+        } else {
+            title.setOnClickListener {
+                expandItem(story)
+            }
+        }
     }
 
     private fun getLikesString(likes: Int): String {
