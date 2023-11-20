@@ -23,7 +23,7 @@ class WDGStoryService {
         suspend fun uploadStory(
             @Header("Authorization") token: String,
             @Body post: PostDto,
-        ): Response<Void>
+        ): Response<StoryDto>
 
         @GET("story/info")
         suspend fun getStory(
@@ -69,7 +69,7 @@ class WDGStoryService {
             content: String,
             latitude: Double,
             longitude: Double,
-        ): Response<Void> {
+        ): Response<StoryDto> {
             val accessToken = WDGUserService.getAccessToken(context)
             val story = PostDto(content, latitude, longitude)
             val response = storyApi.uploadStory("Bearer $accessToken", story)
