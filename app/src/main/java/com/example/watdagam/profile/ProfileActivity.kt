@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.watdagam.storyList.StoryAdapter
 import com.example.watdagam.databinding.ActivityProfileBinding
+import com.example.watdagam.storyList.StoryItem
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -27,10 +28,15 @@ class ProfileActivity : AppCompatActivity() {
             viewBinding.profileLikesNumber.text = likes.toString()
         }
 
+        val storyList = ArrayList<StoryItem>()
+        val storyAdapter = StoryAdapter(storyList)
         viewBinding.myStoryList.layoutManager = LinearLayoutManager(this)
         viewBinding.myStoryList.addItemDecoration((DividerItemDecoration(this, LinearLayoutManager.VERTICAL)))
-        model.getMyStoryList().observe(this) { storyList ->
-            viewBinding.myStoryList.adapter = StoryAdapter(storyList)
+        viewBinding.myStoryList.adapter = storyAdapter
+        model.getMyStoryList().observe(this) { myStoryList ->
+            storyList.clear()
+            storyList.addAll(myStoryList)
+            storyAdapter.notifyDataSetChanged()
         }
 
         viewBinding.toolbarBack.setOnClickListener {
@@ -38,5 +44,6 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         model.loadData(this.applicationContext)
+        model.startLocationTracking(this)
     }
 }

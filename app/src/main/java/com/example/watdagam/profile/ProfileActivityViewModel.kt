@@ -1,8 +1,14 @@
 package com.example.watdagam.profile
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Location
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +18,7 @@ import com.example.watdagam.storyList.StoryItem
 import com.example.watdagam.data.StoryDto
 import com.example.watdagam.storage.StorageService
 import com.example.watdagam.storage.storyRoom.MyStory
+import com.example.watdagam.utils.WDGLocationService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,18 +28,10 @@ class ProfileActivityViewModel: ViewModel() {
         private const val TAG = "WDG_profile_view_model"
     }
 
-    private val _nickname: MutableLiveData<String> by lazy {
-        MutableLiveData<String>()
-    }
-    private val _posts: MutableLiveData<Int> by lazy {
-        MutableLiveData<Int>()
-    }
-    private val _likes: MutableLiveData<Int> by lazy {
-        MutableLiveData<Int>()
-    }
-    private val _myStoryList: MutableLiveData<List<StoryItem>> by lazy {
-        MutableLiveData<List<StoryItem>>()
-    }
+    private val _nickname = MutableLiveData<String>()
+    private val _posts = MutableLiveData<Int>()
+    private val _likes = MutableLiveData<Int>()
+    private val _myStoryList = MutableLiveData<List<StoryItem>>()
 
     fun getNickname(): MutableLiveData<String> = _nickname
     fun getPosts(): MutableLiveData<Int> = _posts
@@ -105,5 +104,34 @@ class ProfileActivityViewModel: ViewModel() {
             storyDto.content,
             storyDto.likeNum
         )
+    }
+
+    fun startLocationTracking(activity: AppCompatActivity) {
+        val locationService = WDGLocationService.getInstance(activity)
+        val fineLocationPermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+        val coarseLocationPermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (fineLocationPermission == PackageManager.PERMISSION_DENIED ||
+            coarseLocationPermission == PackageManager.PERMISSION_DENIED) {
+            Toast.makeText(activity, "글을 남기기 위해서는 자세한 위치 사용 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            locationService.requestLocationPermissions(activity)
+        } else {
+            locationService.startLocationTracking()
+            locationService.getAddress().observe(activity) { address ->
+                if (_myStoryList.value != null)
+                updateListDistance(_myStoryList.value!!, address)
+            }
+        }
+    }
+
+    private fun updateListDistance(prevList: List<StoryItem>, address: Address) {
+        val distance = FloatArray(3)
+        prevList.forEach { storyItem ->
+            Location.distanceBetween(
+                storyItem.latitude, storyItem.longitude,
+                address.latitude, address.longitude, distance
+            )
+            storyItem.distance = distance[0].toDouble()
+        }
+        _myStoryList.postValue(prevList)
     }
 }
