@@ -12,11 +12,7 @@ import com.example.watdagam.profile.ProfileActivity
 
 class MyPageFragment : Fragment() {
     private lateinit var viewBinding: FragmentMyPageBinding
-    private val model: MainActivityViewModel by activityViewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private val model: MyPageViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

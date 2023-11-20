@@ -1,7 +1,7 @@
 package com.example.watdagam.main
 
-import android.location.Address
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,47 +11,38 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.watdagam.databinding.FragmentListBinding
 import com.example.watdagam.storyList.StoryAdapter
+import com.example.watdagam.storyList.StoryItem
 
 class ListFragment : Fragment() {
     private lateinit var viewBinding: FragmentListBinding
-    private val model: MainActivityViewModel by activityViewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private val model: ListViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         viewBinding = FragmentListBinding.inflate(inflater, container, false)
+        val storyList = ArrayList<StoryItem>()
 
-        model.getLastAddress().observe(requireActivity()) { address: Address ->
-            viewBinding.toolbarPlaceName.text =
-                if (!address.thoroughfare.isNullOrBlank()) {
-                    address.thoroughfare
-                } else if (!address.subLocality.isNullOrBlank()) {
-                    address.subLocality
-                } else if (!address.locality.isNullOrBlank()) {
-                    address.locality
-                } else if (!address.subAdminArea.isNullOrBlank()) {
-                    address.subAdminArea
-                } else if (!address.adminArea.isNullOrBlank()) {
-                    address.adminArea
-                } else {
-                    address.countryName
-                }
-            val gpsText = "${address.latitude} ${address.longitude}"
-            viewBinding.toolbarGps.text = gpsText
+        model.getCurrentAddress().observe(viewLifecycleOwner) { address ->
+            viewBinding.toolbarPlaceName.text = address.featureName
+            viewBinding.toolbarGps.text = String.format("%.3f %.3f", address.latitude, address.longitude)
         }
 
+        val storyAdapter = StoryAdapter(storyList)
         viewBinding.storyList.layoutManager = LinearLayoutManager(requireContext())
         viewBinding.storyList.addItemDecoration((DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)))
-        model.getStoryList().observe(requireActivity()) { list ->
-            viewBinding.storyList.adapter = StoryAdapter(list)
+        viewBinding.storyList.adapter = storyAdapter
+        model.getStoryItemList().observe(viewLifecycleOwner) { list ->
+            storyList.clear()
+            storyList.addAll(list)
+            Log.d("WDG_listFragment", storyList.toString())
+            storyAdapter.notifyDataSetChanged()
         }
+
+
+        model.startLocationTracking(requireActivity(), viewLifecycleOwner)
 
         return viewBinding.root
     }
-
 }
