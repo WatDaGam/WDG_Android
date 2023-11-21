@@ -59,6 +59,7 @@
         android:textColor="@color/black"
         android:textSize="18sp"
         android:drawablePadding="5dp"
+        android:clickable="false"
         app:drawableStartCompat="@drawable/ic_thumbs_up"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
