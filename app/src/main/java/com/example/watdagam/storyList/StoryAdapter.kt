@@ -15,4 +15,6 @@ class StoryAdapter(private val storyList: List<StoryItem>): RecyclerView.Adapter
 
     override fun getItemCount(): Int =
         storyList.size
+
+    override fun getItemId(position: Int) = storyList[position].id
 }

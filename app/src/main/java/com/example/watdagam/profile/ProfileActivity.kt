@@ -29,7 +29,9 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         val storyList = ArrayList<StoryItem>()
-        val storyAdapter = StoryAdapter(storyList)
+        val storyAdapter = StoryAdapter(storyList).also {
+            it.setHasStableIds(true)
+        }
         viewBinding.myStoryList.layoutManager = LinearLayoutManager(this)
         viewBinding.myStoryList.addItemDecoration((DividerItemDecoration(this, LinearLayoutManager.VERTICAL)))
         viewBinding.myStoryList.adapter = storyAdapter

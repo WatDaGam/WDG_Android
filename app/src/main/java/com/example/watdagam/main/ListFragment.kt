@@ -29,7 +29,9 @@ class ListFragment : Fragment() {
             viewBinding.toolbarGps.text = String.format("%.3f %.3f", address.latitude, address.longitude)
         }
 
-        val storyAdapter = StoryAdapter(storyList)
+        val storyAdapter = StoryAdapter(storyList).also {
+            it.setHasStableIds(true)
+        }
         viewBinding.storyList.layoutManager = LinearLayoutManager(requireContext())
         viewBinding.storyList.addItemDecoration((DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)))
         viewBinding.storyList.adapter = storyAdapter
