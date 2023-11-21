@@ -10,6 +10,7 @@ import com.example.watdagam.storage.StorageService
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -58,6 +59,7 @@ class WDGUserService {
         private const val BASE_URL = "http://3.35.136.131:8080"
         private val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
+            .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         private val userApi: UserApi = retrofit.create(UserApi::class.java)
@@ -144,7 +146,9 @@ class WDGUserService {
             nickname: String,
         ): Response<Void> {
             val accessToken = getAccessToken(context)
+
             val response = userApi.checkNickname("Bearer $accessToken", nickname)
+            Log.d(TAG, "nickname: ${nickname}")
             Log.d(TAG, "Get response nickname/check\n" + response.raw().toString())
             if (response.code() == 401) {
                 requestLogin(context)

@@ -59,6 +59,7 @@ dependencies {
     // retrofit HTTP 통신
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:converter-scalars:2.4.0")
 
     // 뷰 바인딩
     implementation("androidx.compose.ui:ui-viewbinding:1.5.4")
