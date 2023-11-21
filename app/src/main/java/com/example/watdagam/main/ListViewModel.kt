@@ -71,12 +71,12 @@ class ListViewModel: ViewModel() {
                     val storyItemList = response.body()!!.stories.map { storyDto ->
                         StoryItem(
                             storyDto.id,
-                            storyDto.nickname,
                             storyDto.lati,
                             storyDto.longi,
+                            String.format("%s 왔다감", storyDto.nickname),
                             storyDto.content,
-                            storyDto.likeNum,
-                            0.0
+                            String.format("%.3f %.3f", storyDto.lati, storyDto.longi),
+                            String.format("%d", storyDto.likeNum),
                         )
                     }
                     updateListDistance(storyItemList, address)
@@ -97,7 +97,14 @@ class ListViewModel: ViewModel() {
                 storyItem.latitude, storyItem.longitude,
                 address.latitude, address.longitude, distance
             )
-            storyItem.distance = distance[0].toDouble()
+            storyItem.distance =
+                if (distance[0] > 1_000f) {
+                    String.format("%.3f km", distance[0] / 1_000f)
+                } else if (distance [0] != 0f) {
+                    String.format("%.3f m", distance[0])
+                } else {
+                    "0.0 m"
+                }
         }
         _storyItemList.postValue(prevList)
     }

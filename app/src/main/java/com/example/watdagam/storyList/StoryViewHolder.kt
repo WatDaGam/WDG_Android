@@ -82,19 +82,14 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         likes = itemView.findViewById(R.id.story_likes)
         distance = itemView.findViewById(R.id.story_distance)
 
-        title.text =  itemView.context.getString(R.string.list_title, story.nickname)
-        location.text = String.format("%.3f %.3f", story.latitude, story.longitude)
+        title.text = story.title
+        location.text = story.location
         content.text = story.content
-        likes.text = getLikesString(story.likes)
-        distance.text = getDistanceString(story.distance)
+        likes.text = story.likes
+        distance.text = story.distance
 
         if (story.isExpanded) {
-            title.setOnClickListener {
-                foldItem(story)
-            }
-            content.setOnClickListener {
-                foldItem(story)
-            }
+            sceneRoot.setOnClickListener { foldItem(story) }
             likes.setOnClickListener {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
@@ -110,9 +105,7 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                 }
             }
         } else {
-            title.setOnClickListener {
-                expandItem(story)
-            }
+            sceneRoot.setOnClickListener { expandItem(story) }
         }
     }
 
