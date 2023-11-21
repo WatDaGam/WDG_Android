@@ -95,4 +95,7 @@ dependencies {
     testImplementation("androidx.room:room-testing:$room_version")
     // optional - Paging 3 Integration
     implementation("androidx.room:room-paging:$room_version")
+
+    // 당겨서 새로고침
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }
