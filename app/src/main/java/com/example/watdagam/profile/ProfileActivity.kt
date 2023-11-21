@@ -39,10 +39,16 @@ class ProfileActivity : AppCompatActivity() {
             storyList.clear()
             storyList.addAll(myStoryList)
             storyAdapter.notifyDataSetChanged()
+            viewBinding.swipeRefresh.isRefreshing = false
         }
 
         viewBinding.toolbarBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
+        }
+
+        viewBinding.swipeRefresh.setOnRefreshListener {
+            model.getMyStoryList().postValue(ArrayList())
+            model.loadData(this)
         }
 
         model.loadData(this.applicationContext)

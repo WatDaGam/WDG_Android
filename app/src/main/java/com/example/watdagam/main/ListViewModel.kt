@@ -24,10 +24,24 @@ class ListViewModel: ViewModel() {
     }
     private val _currentAddress = MutableLiveData<Address>()
     private val _storyItemList = MutableLiveData<List<StoryItem>>()
-    private var _lastAddress: Address? = null
+    var lastAddress: Address? = null
 
     fun getCurrentAddress() = _currentAddress
     fun getStoryItemList() = _storyItemList
+
+    fun reloadLocation(activity: Activity) {
+        val locationService = WDGLocationService.getInstance(activity)
+        val fineLocationPermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+        val coarseLocationPermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (fineLocationPermission == PackageManager.PERMISSION_DENIED ||
+            coarseLocationPermission == PackageManager.PERMISSION_DENIED) {
+            Toast.makeText(activity, "글을 남기기 위해서는 자세한 위치 사용 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            locationService.requestLocationPermissions(activity)
+        } else {
+            lastAddress = null
+            locationService.updateLocation()
+        }
+    }
 
     fun startLocationTracking(activity: Activity, owner: LifecycleOwner) {
         val locationService = WDGLocationService.getInstance(activity)
@@ -48,18 +62,18 @@ class ListViewModel: ViewModel() {
 
     private fun updateAddress(context: Context, address: Address) {
         val distance = FloatArray(3)
-        if (_lastAddress != null) {
+        if (lastAddress != null) {
             Location.distanceBetween(
-                _lastAddress!!.latitude, _lastAddress!!.longitude,
+                lastAddress!!.latitude, lastAddress!!.longitude,
                 address.latitude, address.longitude, distance
             )
         }
 
-        if (_storyItemList.value == null || _lastAddress == null || distance[0] > 30f) {
-            _lastAddress = address
+        if (_storyItemList.value == null || lastAddress == null || distance[0] > 30f) {
+            lastAddress = address
             fetchNewStoryList(context, address)
         } else {
-            updateListDistance(_storyItemList.value!!, _lastAddress!!)
+            updateListDistance(_storyItemList.value!!, lastAddress!!)
         }
     }
 

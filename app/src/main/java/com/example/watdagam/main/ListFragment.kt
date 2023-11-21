@@ -40,6 +40,12 @@ class ListFragment : Fragment() {
             storyList.addAll(list)
             Log.d("WDG_listFragment", storyList.toString())
             storyAdapter.notifyDataSetChanged()
+            viewBinding.swipeRefresh.isRefreshing = false
+        }
+
+        viewBinding.swipeRefresh.setOnRefreshListener {
+            model.getStoryItemList().postValue(ArrayList())
+            model.reloadLocation(requireActivity())
         }
 
 
