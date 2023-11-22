@@ -149,7 +149,12 @@ class WDGUserService {
             context: Context,
             nickname: String,
         ): Response<Void> {
-            val accessToken = getAccessToken(context)
+            val tokenService = StorageService.getInstance(context).getTokenService()
+            val accessToken = tokenService.getTempToken()
+            if (accessToken.isEmpty()) {
+                requestLogin(context)
+                throw Exception("Not Valid Token")
+            }
 
             val response = userApi.checkNickname("Bearer $accessToken", nickname)
             Log.d(TAG, "nickname: ${nickname}")
@@ -165,7 +170,13 @@ class WDGUserService {
             context: Context,
             nickname: String,
         ): Response<Void> {
-            val accessToken = getAccessToken(context)
+            val tokenService = StorageService.getInstance(context).getTokenService()
+            val accessToken = tokenService.getTempToken()
+            if (accessToken.isEmpty()) {
+                requestLogin(context)
+                throw Exception("Not Valid Token")
+            }
+
             val response = userApi.setNickname("Bearer $accessToken", nickname)
             Log.d(TAG, "Get response nickname/set\n" + response.raw().toString())
             if (response.code() == 401) {
