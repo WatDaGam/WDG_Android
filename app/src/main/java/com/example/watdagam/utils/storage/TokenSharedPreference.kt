@@ -15,6 +15,9 @@ class TokenSharedPreference(context: Context) {
         private const val KEY_ACCESS_TOKEN_EXPIRATION_TIME = "access-token-expiration-time"
         private const val KEY_REFRESH_TOKEN = "refresh-token"
         private const val KEY_REFRESH_TOKEN_EXPIRATION_TIME = "refresh-token-expiration-time"
+        private var _tempToken: String? = ""
+        private var _tempTokenExpirationTime: Long = 0
+
 
         private const val TAG = "WDG_TOKEN"
     }
@@ -78,11 +81,30 @@ class TokenSharedPreference(context: Context) {
         Log.d(TAG, "refresh token: $token expire at $expLocalDateTime")
     }
 
+    fun getTempToken(): String {
+        if (_tempTokenExpirationTime - System.currentTimeMillis() < 10_000) {
+            _tempToken = ""
+            _tempTokenExpirationTime = 0
+            Log.d(TAG, "temp token expired")
+        }
+        return _tempToken?: ""
+    }
+
+    fun setTempToken(token: String, expTime: Long) {
+        _tempToken = token
+        _tempTokenExpirationTime = expTime
+        val expLocalDateTime = Instant.ofEpochMilli(expTime)
+            .atZone(ZoneId.systemDefault()).toLocalDateTime()
+        Log.d(TAG, "temp token: $token expire at $expLocalDateTime")
+    }
+
     fun expireTokens() {
         _accessToken = ""
         _accessTokenExpirationTime = 0
         _refreshToken = ""
         _refreshTokenExpirationTime = 0
-        Log.d(TAG, "both token expired by code")
+        _tempToken = ""
+        _tempTokenExpirationTime = 0
+        Log.d(TAG, "All token expired by code")
     }
 }
