@@ -80,13 +80,17 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         }
 
         itemView.setOnClickListener {
-            Toast.makeText(itemView.context, "view click", Toast.LENGTH_SHORT).show()
-            if (story.isExpanded) {
-                story.isExpanded = false
-                TransitionManager.go(foldedScene, null)
+            if (story.tooFar) {
+                Toast.makeText(itemView.context, "메세지를 확인하려면 30m이내로 접근해주세요", Toast.LENGTH_SHORT).show()
             } else {
-                story.isExpanded = true
-                TransitionManager.go(expandedScene)
+                Toast.makeText(itemView.context, "view click", Toast.LENGTH_SHORT).show()
+                if (story.isExpanded) {
+                    story.isExpanded = false
+                    TransitionManager.go(foldedScene, null)
+                } else {
+                    story.isExpanded = true
+                    TransitionManager.go(expandedScene)
+                }
             }
         }
     }

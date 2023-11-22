@@ -10,5 +10,6 @@ data class StoryItem(
     var location: String,
     var likes: String,
     var distance: String = "0.0 m",
+    var tooFar: Boolean = true,
     var isExpanded: Boolean = false
 )
