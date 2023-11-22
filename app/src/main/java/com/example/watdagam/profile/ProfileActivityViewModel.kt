@@ -131,12 +131,12 @@ class ProfileActivityViewModel: ViewModel() {
                 address.latitude, address.longitude, distance
             )
             storyItem.distance =
-                if (distance[0] > 1_000f) {
-                    String.format("%.3f km", distance[0] / 1_000f)
-                } else if (distance [0] != 0f) {
-                    String.format("%.3f m", distance[0])
+                if (distance[0] > 100_000f) {
+                    String.format("%d km", (distance[0] / 1_000f).toInt())
+                } else if (distance [0] > 1_000f) {
+                    String.format("%.1f km", distance[0] / 1_000f)
                 } else {
-                    "0.0 m"
+                    String.format("%d m", distance[0].toInt())
                 }
         }
         _myStoryList.postValue(prevList)
