@@ -56,7 +56,7 @@ class WDGUserService {
 
     companion object {
         private const val TAG = "WDG_user_service"
-        private const val BASE_URL = "http://3.35.136.131:8080"
+        private const val BASE_URL = "http://43.200.68.255:8080"
         private val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(ScalarsConverterFactory.create())
@@ -177,6 +177,7 @@ class WDGUserService {
             val accessToken = getAccessToken(context)
             val response = userApi.userinfo("Bearer $accessToken")
             Log.d(TAG, "Get response userinfo\n" + response.raw().toString())
+            Log.d(TAG, response.body().toString())
             if (response.code() == 401) {
                 requestLogin(context)
                 throw Exception("Not Valid Token")
