@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.watdagam.R
 import com.example.watdagam.api.WDGStoryService
@@ -15,12 +16,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    private lateinit var container: ConstraintLayout
     private lateinit var title: TextView
     private lateinit var location: TextView
     private lateinit var content: TextView
     private lateinit var likes: TextView
     private lateinit var distance: TextView
     fun bind(story: StoryItem) {
+        container = itemView.findViewById(R.id.container)
         title = itemView.findViewById(R.id.story_title)
         location = itemView.findViewById(R.id.story_location)
         content = itemView.findViewById(R.id.story_content)
@@ -32,6 +35,9 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         content.text = story.content
         likes.text = story.likes
         distance.text = story.distance
+        container.alpha =
+            if (story.tooFar) 0.3f
+            else 1f
 
         val sceneRoot: ViewGroup = itemView.findViewById(R.id.scene_root)
         val expandedScene = Scene.getSceneForLayout(sceneRoot, R.layout.scene_story_expanded, itemView.context).also {
@@ -83,7 +89,6 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             if (story.tooFar) {
                 Toast.makeText(itemView.context, "메세지를 확인하려면 30m이내로 접근해주세요", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(itemView.context, "view click", Toast.LENGTH_SHORT).show()
                 if (story.isExpanded) {
                     story.isExpanded = false
                     TransitionManager.go(foldedScene, null)

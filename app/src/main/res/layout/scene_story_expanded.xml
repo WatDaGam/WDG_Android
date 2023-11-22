@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:paddingHorizontal="20dp"
     android:paddingVertical="15dp"
+    android:alpha="0.3"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
