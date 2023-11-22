@@ -10,7 +10,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.activity.viewModels
 import com.example.watdagam.R
-import com.example.watdagam.api.KakaoService
+import com.example.watdagam.utils.KakaoLoginService
 import java.util.Timer
 import java.util.TimerTask
 
@@ -25,6 +25,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        KakaoLoginService.initializeSdk(this)
 
         logo = this.findViewById(R.id.logo)
         containerLoginButtons = this.findViewById(R.id.container_login_buttons)
@@ -41,11 +42,15 @@ class LoginActivity : AppCompatActivity() {
         }
 
         loginButtonKakao.setOnClickListener {
-            val kakaoService = KakaoService.getInstance(this.applicationContext)
-            kakaoService.login(
+            KakaoLoginService.login(this,
                 onSuccess = { accessToken -> viewModel.onKakaoLoginSuccess(this, accessToken) },
                 onFailure = { -> viewModel.onKakaoLoginFailure(this) },
             )
+//            val kakaoService = KakaoService.getInstance(this.applicationContext)
+//            kakaoService.login(
+//                onSuccess = { accessToken -> viewModel.onKakaoLoginSuccess(this, accessToken) },
+//                onFailure = { -> viewModel.onKakaoLoginFailure(this) },
+//            )
         }
 
         if (viewModel.hasCachedToken(this)) {

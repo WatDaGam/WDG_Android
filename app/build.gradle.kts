@@ -53,8 +53,8 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     // 카카오 API
-    implementation("com.kakao.sdk:v2-all:2.17.0") // 전체 모듈 설치, 2.11.0 버전부터 지원
-    implementation("com.kakao.sdk:v2-user:2.17.0") // 카카오 로그인
+    implementation("com.kakao.sdk:v2-all-rx:2.18.0") // 전체 모듈 설치, 2.11.0 버전부터 지원
+    implementation("com.kakao.sdk:v2-user-rx:2.18.0") // 카카오 로그인
 
     // retrofit HTTP 통신
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
