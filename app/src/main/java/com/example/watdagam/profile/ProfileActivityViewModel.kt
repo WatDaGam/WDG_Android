@@ -60,8 +60,8 @@ class ProfileActivityViewModel: ViewModel() {
 
                 // Shared Preference 갱신
                 profileService.nickname = profile.nickname
-                profileService.posts = profile.post
-                profileService.likes = profile.likes
+                profileService.posts = profile.storyNum
+                profileService.likes = profile.likeNum
                 _nickname.postValue(profileService.nickname)
                 _posts.postValue(profileService.posts)
                 _likes.postValue(profileService.likes)
@@ -118,7 +118,7 @@ class ProfileActivityViewModel: ViewModel() {
             locationService.startLocationTracking()
             locationService.getAddress().observe(activity) { address ->
                 if (_myStoryList.value != null)
-                updateListDistance(_myStoryList.value!!, address)
+                    updateListDistance(_myStoryList.value!!, address)
             }
         }
     }

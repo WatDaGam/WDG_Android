@@ -2,6 +2,6 @@ package com.example.watdagam.data
 
 data class UserInfo (
     val nickname: String,
-    val post: Int,
-    val likes: Int
+    val storyNum: Int,
+    val likeNum: Int
 )
