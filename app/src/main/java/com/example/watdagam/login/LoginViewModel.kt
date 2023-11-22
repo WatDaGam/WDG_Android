@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.watdagam.Signup.SignupActivity
 import com.example.watdagam.api.WDGUserService
 import com.example.watdagam.main.MainActivity
-import com.example.watdagam.storage.StorageService
+import com.example.watdagam.utils.storage.StorageService
 import kotlinx.coroutines.launch
 
 class LoginViewModel: ViewModel() {

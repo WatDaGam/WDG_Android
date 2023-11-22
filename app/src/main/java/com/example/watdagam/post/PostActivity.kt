@@ -9,7 +9,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
 import com.example.watdagam.R
 import com.example.watdagam.databinding.ActivityPostBinding
-import com.example.watdagam.storage.StorageService
+import com.example.watdagam.utils.storage.StorageService
 
 class PostActivity : AppCompatActivity() {
 

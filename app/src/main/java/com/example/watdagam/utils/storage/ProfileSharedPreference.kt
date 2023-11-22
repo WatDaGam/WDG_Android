@@ -1,4 +1,4 @@
-package com.example.watdagam.storage
+package com.example.watdagam.utils.storage
 
 import android.content.Context
 import android.content.SharedPreferences

@@ -1,4 +1,4 @@
-package com.example.watdagam.storage.storyRoom
+package com.example.watdagam.utils.storage.storyRoom
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

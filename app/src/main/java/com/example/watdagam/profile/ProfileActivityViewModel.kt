@@ -16,8 +16,8 @@ import com.example.watdagam.api.WDGStoryService
 import com.example.watdagam.api.WDGUserService
 import com.example.watdagam.storyList.StoryItem
 import com.example.watdagam.data.StoryDto
-import com.example.watdagam.storage.StorageService
-import com.example.watdagam.storage.storyRoom.MyStory
+import com.example.watdagam.utils.storage.StorageService
+import com.example.watdagam.utils.storage.storyRoom.MyStory
 import com.example.watdagam.utils.WDGLocationService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

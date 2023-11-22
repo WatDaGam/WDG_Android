@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.watdagam.api.WDGUserService
 import com.example.watdagam.login.LoginActivity
-import com.example.watdagam.storage.StorageService
+import com.example.watdagam.utils.storage.StorageService
 import kotlinx.coroutines.launch
 
 class MyPageViewModel: ViewModel() {

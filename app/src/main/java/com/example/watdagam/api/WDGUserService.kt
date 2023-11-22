@@ -6,7 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import com.example.watdagam.data.UserInfo
 import com.example.watdagam.login.LoginActivity
-import com.example.watdagam.storage.StorageService
+import com.example.watdagam.utils.storage.StorageService
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

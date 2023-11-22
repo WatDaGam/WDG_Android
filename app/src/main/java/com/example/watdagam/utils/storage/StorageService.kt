@@ -1,9 +1,9 @@
-package com.example.watdagam.storage
+package com.example.watdagam.utils.storage
 
 import android.content.Context
 import androidx.room.Room
-import com.example.watdagam.storage.storyRoom.MyStoryDao
-import com.example.watdagam.storage.storyRoom.StoryDatabase
+import com.example.watdagam.utils.storage.storyRoom.MyStoryDao
+import com.example.watdagam.utils.storage.storyRoom.StoryDatabase
 
 class StorageService {
     companion object {

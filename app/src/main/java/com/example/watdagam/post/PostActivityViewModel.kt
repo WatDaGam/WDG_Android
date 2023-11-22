@@ -13,8 +13,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.watdagam.api.WDGStoryService
 import com.example.watdagam.main.MainActivity
-import com.example.watdagam.storage.StorageService
-import com.example.watdagam.storage.storyRoom.MyStory
 import com.example.watdagam.utils.WDGLocationService
 import kotlinx.coroutines.launch
 
@@ -42,16 +40,6 @@ class PostActivityViewModel: ViewModel() {
                         _address.value!!.longitude
                     )
                     if (response.isSuccessful) {
-//                        val newStory = response.body()!!
-//                        val myStoryDao = StorageService.getInstance(activity).getMyStoryDao()
-//                        myStoryDao.insertStory(MyStory(
-//                            newStory.id,
-//                            newStory.nickname,
-//                            newStory.lati,
-//                            newStory.longi,
-//                            newStory.content,
-//                            newStory.likeNum
-//                        ))
                         Toast.makeText(activity, "메세지를 남겼습니다.", Toast.LENGTH_SHORT).show()
                         activity.startActivity(Intent(activity, MainActivity::class.java))
                     } else {

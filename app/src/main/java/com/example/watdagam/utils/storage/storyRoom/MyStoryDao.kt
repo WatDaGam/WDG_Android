@@ -1,4 +1,4 @@
-package com.example.watdagam.storage.storyRoom
+package com.example.watdagam.utils.storage.storyRoom
 
 import androidx.room.Dao
 import androidx.room.Delete
