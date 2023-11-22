@@ -85,10 +85,14 @@ class WDGUserService {
             val tokenService = StorageService.getInstance(context).getTokenService()
             val accessToken = response.headers()[KEY_ACCESS_TOKEN].toString().split(" ")[1]
             val accessExpiration = response.headers()[KEY_ACCESS_EXPIRATION].toString().toLong()
-            val refreshToken = response.headers()[KEY_REFRESH_TOKEN].toString()
-            val refreshExpiration = response.headers()[KEY_REFRESH_EXPIRATION].toString().toLong()
-            tokenService.setAccessToken(accessToken, accessExpiration)
-            tokenService.setRefreshToken(refreshToken, refreshExpiration)
+            if (response.code() == 201) {
+                tokenService.setTempToken(accessToken, accessExpiration)
+            } else {
+                val refreshToken = response.headers()[KEY_REFRESH_TOKEN].toString()
+                val refreshExpiration = response.headers()[KEY_REFRESH_EXPIRATION].toString().toLong()
+                tokenService.setAccessToken(accessToken, accessExpiration)
+                tokenService.setRefreshToken(refreshToken, refreshExpiration)
+            }
             return response
         }
 
