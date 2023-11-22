@@ -69,7 +69,7 @@ class ListViewModel: ViewModel() {
             )
         }
 
-        if (_storyItemList.value == null || lastAddress == null || distance[0] > 30f) {
+        if (_storyItemList.value == null || lastAddress == null || distance[0] > 15f) {
             lastAddress = address
             fetchNewStoryList(context, address)
         } else {
