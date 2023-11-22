@@ -89,7 +89,7 @@ class ListViewModel: ViewModel() {
                             storyDto.longi,
                             String.format("%s 왔다감", storyDto.nickname),
                             storyDto.content,
-                            String.format("%.3f %.3f", storyDto.lati, storyDto.longi),
+                            String.format("%.4f %.4f", storyDto.lati, storyDto.longi),
                             String.format("%d", storyDto.likeNum),
                         )
                     }

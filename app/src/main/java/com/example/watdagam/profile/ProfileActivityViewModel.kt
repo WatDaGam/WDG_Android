@@ -89,7 +89,7 @@ class ProfileActivityViewModel: ViewModel() {
                 myStory.longitude,
                 String.format("%s 왔다감", myStory.nickname),
                 myStory.content,
-                String.format("%.3f %.3f", myStory.latitude, myStory.longitude),
+                String.format("%.4f %.4f", myStory.latitude, myStory.longitude),
                 String.format("%d", myStory.likes),
             )
         }
