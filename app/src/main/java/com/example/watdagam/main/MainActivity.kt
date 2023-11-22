@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.watdagam.R
 import com.example.watdagam.databinding.ActivityMainBinding
 import com.example.watdagam.post.PostActivity
@@ -24,7 +25,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.navigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.listFragment -> setFragment(TAG_LIST, ListFragment())
+                R.id.listFragment -> {
+                    setFragment(TAG_LIST, ListFragment())
+                    binding.mainFrameLayout.findViewById<RecyclerView>(R.id.story_list)?.smoothScrollToPosition(0)
+                }
                 R.id.postFragment -> startActivity(Intent(this, PostActivity::class.java))
                 R.id.myPageFragment -> setFragment(TAG_MY_PAGE, MyPageFragment())
             }
