@@ -3,6 +3,7 @@ package com.example.watdagam.storyList
 import android.animation.ValueAnimator
 import android.transition.Scene
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -13,6 +14,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.example.watdagam.R
+import com.example.watdagam.api.WDGStoryService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     private lateinit var container: ConstraintLayout
@@ -87,14 +92,21 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         }
         likesContainer.setOnClickListener {
             likeAnimator.start()
-            postLikeApi(story)
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val response = WDGStoryService.addLike(itemView.context, story.id)
+                    if (response.isSuccessful) {
+                        if (response.body() != null && story.likes != response.body()!!.likeNum) {
+                            story.likes = response.body()!!.likeNum
+                            likesNum.text = story.likes.toString()
+                        }
+                    } else {
+                        throw Exception("Response is not successful")
+                    }
+                } catch (e: Exception) {
+                    Log.e("WDG_storyViewHolder", "add like failed cause ${e.message} ${e.cause}")
+                }
+            }
         }
-    }
-
-    private fun postLikeApi(story: StoryItem) {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val response = WDGStoryService.addLike(itemView.context, story.id);
-//        }
-        Toast.makeText(itemView.context, "I like it!", Toast.LENGTH_SHORT).show()
     }
 }

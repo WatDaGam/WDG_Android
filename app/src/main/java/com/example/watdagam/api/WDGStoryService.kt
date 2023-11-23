@@ -47,13 +47,17 @@ class WDGStoryService {
         suspend fun likeStory(
             @Header("Authorization") token: String,
             @Query("storyId") storyId: Long,
-        ): Response<Void>
+        ): Response<AddLikeDto>
 
         @GET("myStory")
         suspend fun getMyStoryList(
             @Header("Authorization") token: String,
         ): Response<StoryListDto>
     }
+
+    data class AddLikeDto(
+        val likeNum: Int
+    )
 
     companion object {
         private const val TAG = "WDG_story_service"
@@ -127,7 +131,7 @@ class WDGStoryService {
         suspend fun addLike(
             context: Context,
             storyId: Long,
-        ): Response<Void> {
+        ): Response<AddLikeDto> {
             val accessToken = WDGUserService.getAccessToken(context)
             val response = storyApi.likeStory("Bearer $accessToken", storyId)
             Log.d(TAG, "Get response like/add\n" + response.raw().toString())
