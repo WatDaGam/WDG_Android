@@ -33,6 +33,7 @@
 
     <string name="list_title">%s 왔다감</string>
     <string name="list_more_desc">more</string>
+    <string name="list_item_distance">거리</string>
 
 
 </resources>
