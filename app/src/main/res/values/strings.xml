@@ -31,6 +31,7 @@
 
     <string name="list_more_desc">more</string>
     <string name="list_item_distance">거리</string>
+    <string name="list_item_report">신고하기</string>
 
 
 </resources>
