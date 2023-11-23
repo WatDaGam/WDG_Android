@@ -99,4 +99,7 @@ dependencies {
 
     // 당겨서 새로고침
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    // Lottie Animation
+    implementation("com.airbnb.android:lottie:6.2.0")
 }
