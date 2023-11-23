@@ -1,14 +1,18 @@
 package com.example.watdagam.storyList
 
 import android.animation.ValueAnimator
+import android.os.Looper
 import android.transition.Scene
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -30,6 +34,7 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     private lateinit var distanceContainer: LinearLayoutCompat
     private lateinit var distanceIcon: ImageView
     private lateinit var distanceNum: TextView
+    private lateinit var more: ImageButton
 
     private val likeAnimator = ValueAnimator.ofFloat(0.0f, 1.5f).setDuration(1000)
     fun bind(story: StoryItem) {
@@ -39,6 +44,7 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             it.setEnterAction {
                 bindViews(story)
                 addLikePressedListener(story)
+                addMorePressedListener(story)
             }
         }
         val foldedScene = Scene.getSceneForLayout(sceneRoot, R.layout.scene_story_folded, itemView.context).also {
@@ -76,6 +82,7 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         distanceContainer = itemView.findViewById(R.id.story_distance_container)
         distanceIcon = itemView.findViewById(R.id.story_distance_icon)
         distanceNum = itemView.findViewById(R.id.story_distance_num)
+        more = itemView.findViewById(R.id.story_more)
 
         title.text = story.title
         location.text = story.location
@@ -107,6 +114,39 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                     Log.e("WDG_storyViewHolder", "add like failed cause ${e.message} ${e.cause}")
                 }
             }
+        }
+    }
+
+    private fun addMorePressedListener(story: StoryItem) {
+        fun reportStory() {
+            CoroutineScope(Dispatchers.IO).launch {
+                // Report story
+                val handler = android.os.Handler(Looper.getMainLooper())
+                handler.postDelayed({
+                    Toast.makeText(itemView.context, "${story.id} 메시지를 신고했습니다.", Toast.LENGTH_SHORT).show()
+                }, 0)
+            }
+        }
+
+        more.setOnClickListener { view ->
+            val menu = PopupMenu(itemView.context, view)
+            val inflater = menu.menuInflater
+            inflater.inflate(R.menu.list_item_menu, menu.menu)
+            menu.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.report_story -> {
+                        val dialog = AlertDialog.Builder(itemView.context)
+                            .setMessage("이 메시지를 신고하시겠습니까?")
+                            .setNegativeButton("아니요", null)
+                            .setPositiveButton("네") {_, _ -> reportStory() }
+                            .create()
+                        dialog.show()
+                        true
+                    }
+                    else -> false
+                }
+            }
+            menu.show()
         }
     }
 }
