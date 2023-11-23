@@ -91,6 +91,7 @@ class ProfileActivityViewModel: ViewModel() {
                 myStory.content,
                 String.format("%.4f %.4f", myStory.latitude, myStory.longitude),
                 myStory.likes,
+                tooFar = false,
             )
         }
     }
@@ -130,7 +131,6 @@ class ProfileActivityViewModel: ViewModel() {
                 storyItem.latitude, storyItem.longitude,
                 address.latitude, address.longitude, distance
             )
-            storyItem.tooFar = distance[0] > 30f
             storyItem.distance =
                 if (distance[0] > 100_000f) {
                     String.format("%d km", (distance[0] / 1_000f).toInt())
