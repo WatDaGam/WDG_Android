@@ -28,12 +28,13 @@
         app:layout_constraintBottom_toBottomOf="@id/story_title"
         app:layout_constraintStart_toEndOf="@id/story_title"/>
 
-    <ImageButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/story_more"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:src="@drawable/ic_more_horiz"
         android:contentDescription="@string/list_more_desc"
+        android:background="@color/white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -60,6 +61,7 @@
             android:id="@+id/story_likes_anim"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:background="@drawable/ic_like_folded"
             app:lottie_fileName="like_animation.json"
             app:lottie_loop="false"
             app:lottie_autoPlay="false"/>
@@ -84,7 +86,7 @@
             android:id="@+id/story_distance_icon"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/ic_navigation_arrow"
+            android:src="@drawable/ic_distance_expanded"
             android:contentDescription="@string/list_item_distance"/>
         <TextView
             android:id="@+id/story_distance_num"

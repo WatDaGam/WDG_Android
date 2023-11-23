@@ -66,6 +66,7 @@
             android:id="@+id/story_likes_anim"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:background="@drawable/ic_like_folded"
             app:lottie_fileName="like_animation.json"
             app:lottie_loop="false"
             app:lottie_autoPlay="false"/>
@@ -90,7 +91,7 @@
             android:id="@+id/story_distance_icon"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_navigation_arrow"
+            android:src="@drawable/ic_distance_folded"
             android:contentDescription="@string/list_item_distance"/>
         <TextView
             android:id="@+id/story_distance_num"

@@ -9,7 +9,6 @@
     <string name="nickname_noti_info">닉네임은 2자부터 10자까지 설정할 수 있습니다.</string>
     <string name="nickname_noti_invalid">이 닉네임은 사용할 수 없습니다.</string>
     <string name="nickname_noti_valid">이 닉네임은 사용할 수 있습니다.</string>
-    <string name="alt_info">정보</string>
 
     <string name="navigation_title_list">리스트</string>
     <string name="navigation_title_post">글쓰기</string>
@@ -18,7 +17,6 @@
     <string name="profile_post">남긴 글</string>
     <string name="profile_like">좋아요</string>
 
-    <string name="post_cancel">취소</string>
     <string name="post_text_hint">남길 메세지를 입력해주세요</string>
     <string name="post_text_count">%d/100</string>
     <string name="post_send">남기기</string>
@@ -31,7 +29,6 @@
     <string name="my_page_logout">로그아웃</string>
     <string name="my_page_withdraw">회원탈퇴</string>
 
-    <string name="list_title">%s 왔다감</string>
     <string name="list_more_desc">more</string>
     <string name="list_item_distance">거리</string>
 
