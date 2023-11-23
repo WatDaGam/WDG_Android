@@ -13,10 +13,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.example.watdagam.R
-import com.example.watdagam.api.WDGStoryService
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     private lateinit var container: ConstraintLayout
@@ -30,11 +26,9 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     private lateinit var distanceIcon: ImageView
     private lateinit var distanceNum: TextView
 
-    private val likeAnimator = ValueAnimator.ofFloat(0.0f, 0.5f).setDuration(500)
-    private val unlikeAnimator = ValueAnimator.ofFloat(0.5f, 1.0f).setDuration(500)
+    private val likeAnimator = ValueAnimator.ofFloat(0.0f, 1.5f).setDuration(1000)
     fun bind(story: StoryItem) {
         bindViews(story)
-
         val sceneRoot: ViewGroup = itemView.findViewById(R.id.scene_root)
         val expandedScene = Scene.getSceneForLayout(sceneRoot, R.layout.scene_story_expanded, itemView.context).also {
             it.setEnterAction {
@@ -48,9 +42,11 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             }
         }
 
+        if (story.tooFar) {
+            foldedScene.enter()
+        }
         itemView.setOnClickListener {
             if (story.tooFar) {
-                foldedScene.enter()
                 Toast.makeText(itemView.context, "메세지를 확인하려면 30m이내로 접근해주세요", Toast.LENGTH_SHORT).show()
             } else {
                 if (story.isExpanded) {
@@ -79,31 +75,19 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         title.text = story.title
         location.text = story.location
         content.text = story.content
+        likesAnimation.progress = if (story.isExpanded) 1.0f else 0.0f
         likesNum.text = story.likes.toString()
         distanceNum. text = story.distance
         container.alpha = if (story.tooFar) 0.3f else 1f
-        likesAnimation.progress = if (story.hasLikeFromMe) 0.5f else 0.0f
     }
 
     private fun addLikePressedListener(story: StoryItem) {
-        unlikeAnimator.addUpdateListener { animation: ValueAnimator ->
-            likesAnimation.progress = animation.animatedValue as Float
-        }
         likeAnimator.addUpdateListener { animation: ValueAnimator ->
             likesAnimation.progress = animation.animatedValue as Float
         }
         likesContainer.setOnClickListener {
-            if (story.hasLikeFromMe) {
-                likesNum.text = (--story.likes).toString()
-                unlikeAnimator.start()
-                story.hasLikeFromMe = false
-                postUnlikeApi(story)
-            } else {
-                likesNum.text = (++story.likes).toString()
-                likeAnimator.start()
-                story.hasLikeFromMe = true
-                postLikeApi(story)
-            }
+            likeAnimator.start()
+            postLikeApi(story)
         }
     }
 
@@ -112,9 +96,5 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 //            val response = WDGStoryService.addLike(itemView.context, story.id);
 //        }
         Toast.makeText(itemView.context, "I like it!", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun postUnlikeApi(story: StoryItem) {
-        Toast.makeText(itemView.context, "I don't like it!", Toast.LENGTH_SHORT).show()
     }
 }
