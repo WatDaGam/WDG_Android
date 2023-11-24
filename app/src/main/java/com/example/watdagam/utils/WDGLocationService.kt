@@ -94,6 +94,8 @@ class WDGLocationService {
                 val lastAddress =
                     geocoder.getFromLocation(location.latitude, location.longitude, 1)?.first()
                         ?: throw Exception("Cannot fetch location")
+                lastAddress.latitude = location.latitude
+                lastAddress.longitude = location.longitude
                 lastAddress.featureName =
                     if (lastAddress.thoroughfare.isNullOrBlank().not()) {
                         lastAddress.thoroughfare
