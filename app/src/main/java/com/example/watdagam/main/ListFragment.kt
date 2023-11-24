@@ -1,7 +1,6 @@
 package com.example.watdagam.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +25,7 @@ class ListFragment : Fragment() {
 
         model.getCurrentAddress().observe(viewLifecycleOwner) { address ->
             viewBinding.toolbarPlaceName.text = address.featureName
-            viewBinding.toolbarGps.text = String.format("%.3f %.3f", address.latitude, address.longitude)
+            viewBinding.toolbarGps.text = String.format("%.5f %.5f", address.latitude, address.longitude)
         }
 
         val storyAdapter = StoryAdapter(storyList).also {
@@ -38,7 +37,7 @@ class ListFragment : Fragment() {
         model.getStoryItemList().observe(viewLifecycleOwner) { list ->
             storyList.clear()
             storyList.addAll(list)
-            Log.d("WDG_listFragment", storyList.toString())
+//            Log.d("WDG_listFragment", storyList.toString())
             storyAdapter.notifyDataSetChanged()
             viewBinding.swipeRefresh.isRefreshing = false
         }

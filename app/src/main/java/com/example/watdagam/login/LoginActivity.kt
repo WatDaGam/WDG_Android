@@ -46,11 +46,6 @@ class LoginActivity : AppCompatActivity() {
                 onSuccess = { accessToken -> viewModel.onKakaoLoginSuccess(this, accessToken) },
                 onFailure = { -> viewModel.onKakaoLoginFailure(this) },
             )
-//            val kakaoService = KakaoService.getInstance(this.applicationContext)
-//            kakaoService.login(
-//                onSuccess = { accessToken -> viewModel.onKakaoLoginSuccess(this, accessToken) },
-//                onFailure = { -> viewModel.onKakaoLoginFailure(this) },
-//            )
         }
 
         if (viewModel.hasCachedToken(this)) {
