@@ -68,6 +68,7 @@
             android:layout_height="40dp"
             android:background="@drawable/ic_like_folded"
             app:lottie_fileName="like_animation.json"
+            app:lottie_progress="0.0"
             app:lottie_loop="false"
             app:lottie_autoPlay="false"/>
         <TextView
