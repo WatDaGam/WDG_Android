@@ -53,6 +53,12 @@ class WDGStoryService {
         suspend fun getMyStoryList(
             @Header("Authorization") token: String,
         ): Response<StoryListDto>
+
+        @GET("report")
+        suspend fun reportStory(
+            @Header("Authorization") token: String,
+            @Query("storyId") storyId: Long,
+        ): Response<Void>
     }
 
     data class AddLikeDto(
@@ -148,6 +154,20 @@ class WDGStoryService {
             val accessToken = WDGUserService.getAccessToken(context)
             val response = storyApi.getMyStoryList("Bearer $accessToken")
             Log.d(TAG, "Get response myStory\n" + response.raw().toString())
+            if (response.code() == 401) {
+                WDGUserService.requestLogin(context)
+                throw Exception("Not Valid Token")
+            }
+            return response
+        }
+
+        suspend fun reportStory(
+            context: Context,
+            storyId: Long,
+        ): Response<Void> {
+            val accessToken = WDGUserService.getAccessToken(context)
+            val response = storyApi.reportStory("Bearer $accessToken", storyId)
+            Log.d(TAG, "Get response report\n" + response.raw().toString())
             if (response.code() == 401) {
                 WDGUserService.requestLogin(context)
                 throw Exception("Not Valid Token")
