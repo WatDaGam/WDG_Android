@@ -21,6 +21,10 @@ import com.google.android.gms.location.Priority
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.lang.Math.atan2
+import java.lang.Math.cos
+import java.lang.Math.sin
+import java.lang.Math.sqrt
 import java.util.Locale
 
 class WDGLocationService {
@@ -41,8 +45,8 @@ class WDGLocationService {
                 appContext = context.applicationContext
                 client = LocationServices.getFusedLocationProviderClient(appContext)
                 geocoder = Geocoder(appContext, Locale.KOREA)
-                locationRequest = LocationRequest.Builder(3_000)
-                    .setIntervalMillis(5_000)
+                locationRequest = LocationRequest.Builder(1_000)
+                    .setIntervalMillis(1_000)
                     .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
                     .build()
                 locationCallback = object: LocationCallback() {
@@ -58,6 +62,17 @@ class WDGLocationService {
                 }
                 instance = it
             }
+        }
+
+        fun getDistance(latitude1: Double, longitude1: Double, latitude2: Double, longitude2: Double): Double {
+            val earthRadius = 6371.0 // Earth radius in kilometers
+            val dLat = Math.toRadians(latitude2 - latitude1)
+            val dLon = Math.toRadians(longitude2 - longitude1)
+            val a = sin(dLat / 2) * sin(dLat / 2) + cos(Math.toRadians(latitude1)) *
+                    cos(Math.toRadians(latitude2)) * sin(dLon / 2) * sin(dLon / 2)
+            val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+            return earthRadius * c * 1000
         }
     }
 
@@ -111,6 +126,7 @@ class WDGLocationService {
                         lastAddress.countryName
                     }
                 address.postValue(lastAddress)
+                Log.d(TAG, "lastAddress: $lastAddress")
             } catch (e: Exception) {
                 Log.e(TAG, "Fail to get address cause ${e.message} ${e.cause}")
             }

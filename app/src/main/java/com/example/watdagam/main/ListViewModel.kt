@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Address
-import android.location.Location
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -24,7 +23,7 @@ class ListViewModel: ViewModel() {
     }
     private val _currentAddress = MutableLiveData<Address>()
     private val _storyItemList = MutableLiveData<List<StoryItem>>()
-    var lastAddress: Address? = null
+    private var lastAddress: Address? = null
 
     fun getCurrentAddress() = _currentAddress
     fun getStoryItemList() = _storyItemList
@@ -61,19 +60,18 @@ class ListViewModel: ViewModel() {
     }
 
     private fun updateAddress(context: Context, address: Address) {
-        val distance = FloatArray(3)
+        var distance = 0.0
         if (lastAddress != null) {
-            Location.distanceBetween(
+            distance = WDGLocationService.getDistance(
                 lastAddress!!.latitude, lastAddress!!.longitude,
-                address.latitude, address.longitude, distance
-            )
+                address.latitude, address.longitude)
         }
 
-        if (_storyItemList.value == null || lastAddress == null || distance[0] > 15f) {
+        if (_storyItemList.value == null || lastAddress == null || distance > 15f) {
             lastAddress = address
             fetchNewStoryList(context, address)
         } else {
-            updateListDistance(_storyItemList.value!!, lastAddress!!)
+            updateListDistance(_storyItemList.value!!, address)
         }
     }
 
@@ -89,7 +87,7 @@ class ListViewModel: ViewModel() {
                             storyDto.longi,
                             String.format("%s 왔다감", storyDto.nickname),
                             storyDto.content,
-                            String.format("%.4f %.4f", storyDto.lati, storyDto.longi),
+                            String.format("%.5f %.5f", storyDto.lati, storyDto.longi),
                             storyDto.likeNum
                         )
                     }
@@ -105,20 +103,18 @@ class ListViewModel: ViewModel() {
     }
 
     private fun updateListDistance(prevList: List<StoryItem>, address: Address) {
-        val distance = FloatArray(3)
         prevList.forEach { storyItem ->
-            Location.distanceBetween(
+            val distance = WDGLocationService.getDistance(
                 storyItem.latitude, storyItem.longitude,
-                address.latitude, address.longitude, distance
-            )
-            storyItem.tooFar = distance[0] > 30f
+                address.latitude, address.longitude)
+            storyItem.tooFar = distance > 30.0
             storyItem.distance =
-                if (distance[0] > 100_000f) {
-                    String.format("%d km", (distance[0] / 1_000f).toInt())
-                } else if (distance [0] > 1_000f) {
-                    String.format("%.1f km", distance[0] / 1_000f)
+                if (distance > 100_000f) {
+                    String.format("%d km", (distance / 1_000f).toInt())
+                } else if (distance > 1_000f) {
+                    String.format("%.1f km", distance / 1_000f)
                 } else {
-                    String.format("%d m", distance[0].toInt())
+                    String.format("%.2f m", distance)
                 }
         }
         _storyItemList.postValue(prevList)

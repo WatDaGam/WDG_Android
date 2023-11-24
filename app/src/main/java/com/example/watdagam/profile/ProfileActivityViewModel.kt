@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Address
-import android.location.Location
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -125,19 +124,17 @@ class ProfileActivityViewModel: ViewModel() {
     }
 
     private fun updateListDistance(prevList: List<StoryItem>, address: Address) {
-        val distance = FloatArray(3)
         prevList.forEach { storyItem ->
-            Location.distanceBetween(
+            val distance = WDGLocationService.getDistance(
                 storyItem.latitude, storyItem.longitude,
-                address.latitude, address.longitude, distance
-            )
+                address.latitude, address.longitude)
             storyItem.distance =
-                if (distance[0] > 100_000f) {
-                    String.format("%d km", (distance[0] / 1_000f).toInt())
-                } else if (distance [0] > 1_000f) {
-                    String.format("%.1f km", distance[0] / 1_000f)
+                if (distance > 100_000f) {
+                    String.format("%d km", (distance / 1_000f).toInt())
+                } else if (distance > 1_000f) {
+                    String.format("%.1f km", distance / 1_000f)
                 } else {
-                    String.format("%d m", distance[0].toInt())
+                    String.format("%.2f m", distance)
                 }
         }
         _myStoryList.postValue(prevList)
