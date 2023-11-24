@@ -36,7 +36,7 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     private lateinit var distanceNum: TextView
     private lateinit var more: ImageButton
 
-    private val likeAnimator = ValueAnimator.ofFloat(0.0f, 1.5f).setDuration(1000)
+    private val likeAnimator = ValueAnimator.ofFloat(0.0f, 1.0f).setDuration(1000)
     fun bind(story: StoryItem) {
         bindViews(story)
         val sceneRoot: ViewGroup = itemView.findViewById(R.id.scene_root)
@@ -53,7 +53,7 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             }
         }
 
-        if (story.tooFar) {
+        if (story.tooFar || !story.isExpanded) {
             foldedScene.enter()
         }
         itemView.setOnClickListener {
@@ -87,7 +87,6 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         title.text = story.title
         location.text = story.location
         content.text = story.content
-        likesAnimation.progress = if (story.isExpanded) 1.0f else 0.0f
         likesNum.text = story.likes.toString()
         distanceNum. text = story.distance
         container.alpha = if (story.tooFar) 0.3f else 1f
@@ -105,7 +104,7 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                     if (response.isSuccessful) {
                         if (response.body() != null && story.likes != response.body()!!.likeNum) {
                             story.likes = response.body()!!.likeNum
-                            likesNum.text = story.likes.toString()
+//                            likesNum.text = story.likes.toString()
                         }
                     } else {
                         throw Exception("Response is not successful")
