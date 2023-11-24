@@ -120,10 +120,21 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun reportStory() {
             CoroutineScope(Dispatchers.IO).launch {
                 // Report story
-                val handler = android.os.Handler(Looper.getMainLooper())
-                handler.postDelayed({
-                    Toast.makeText(itemView.context, "${story.id} 메시지를 신고했습니다.", Toast.LENGTH_SHORT).show()
-                }, 0)
+                try {
+                    val response = WDGStoryService.reportStory(itemView.context, story.id)
+                    if (response.isSuccessful) {
+                        val handler = android.os.Handler(Looper.getMainLooper())
+                        handler.postDelayed({
+                            Toast.makeText(
+                                itemView.context,
+                                "${story.id} 메시지를 신고했습니다.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }, 0)
+                    }
+                } catch (e: Exception) {
+                    Log.e("WDG_storyViewHolder", "report like failed cause ${e.message} ${e.cause}")
+                }
             }
         }
 
