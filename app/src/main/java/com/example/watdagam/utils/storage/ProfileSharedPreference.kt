@@ -10,6 +10,7 @@ class ProfileSharedPreference (context: Context) {
         private const val KEY_NICKNAME = "key-nickname"
         private const val KEY_POSTS = "key-posts"
         private const val KEY_LIKES = "key-likes"
+        private val _reportedStories = ArrayList<String>()
     }
     private val preferences: SharedPreferences = context.getSharedPreferences(PREFERENCE_FILENAME,0)
 
@@ -24,5 +25,7 @@ class ProfileSharedPreference (context: Context) {
     var likes: Int
         get() = preferences.getInt(KEY_LIKES, 0)
         set(value) = preferences.edit().putInt(KEY_LIKES, value).apply()
+
+    fun getReportedStories() = _reportedStories
 
 }
