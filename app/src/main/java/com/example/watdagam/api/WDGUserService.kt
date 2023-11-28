@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
-import com.example.watdagam.data.UserInfo
 import com.example.watdagam.login.LoginActivity
 import com.example.watdagam.utils.storage.StorageService
 import retrofit2.Response
@@ -51,8 +50,16 @@ class WDGUserService {
         @GET("userInfo")
         suspend fun userinfo(
             @Header("Authorization") token: String,
-        ): Response<UserInfo>
+        ): Response<UserInfoDto>
     }
+
+    data class UserInfoDto(
+        val createdAt: Long,
+        val storyNum: Int,
+        val nickname: String,
+        val likeNum: Int,
+        val reportedStories: ArrayList<String>
+    )
 
     companion object {
         private const val TAG = "WDG_user_service"
@@ -188,12 +195,18 @@ class WDGUserService {
 
         suspend fun getUserInfo(
             context: Context
-        ): Response<UserInfo> {
+        ): Response<UserInfoDto> {
             val accessToken = getAccessToken(context)
             val response = userApi.userinfo("Bearer $accessToken")
             Log.d(TAG, "Get response userinfo\n" + response.raw().toString())
             Log.d(TAG, response.body().toString())
-            if (response.code() == 401) {
+            if (response.isSuccessful) {
+                val reportedStories = response.body()?.reportedStories
+                if (!reportedStories.isNullOrEmpty()) {
+                    val profileService = StorageService.getInstance(context).getProfileService()
+                    profileService.getReportedStories().addAll(reportedStories)
+                }
+            } else if (response.code() == 401) {
                 requestLogin(context)
                 throw Exception("Not Valid Token")
             }
