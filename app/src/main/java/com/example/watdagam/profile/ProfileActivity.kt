@@ -3,11 +3,13 @@ package com.example.watdagam.profile
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.watdagam.storyList.StoryAdapter
 import com.example.watdagam.databinding.ActivityProfileBinding
 import com.example.watdagam.storyList.StoryItem
+import com.example.watdagam.utils.storage.StorageService
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -53,5 +55,19 @@ class ProfileActivity : AppCompatActivity() {
 
         model.loadData(this.applicationContext)
         model.startLocationTracking(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val profileService = StorageService.getInstance(this).getProfileService()
+        val reportedStories = profileService.getReportedStories()
+        reportedStories.forEach { content: String ->
+            val dialog = AlertDialog.Builder(this)
+                .setMessage("신고가 누적되어 메세지가 삭제되었습니다. 삭제된 메세지: $content")
+                .setPositiveButton("확인", null)
+                .create()
+            dialog.show()
+        }
+        reportedStories.clear()
     }
 }

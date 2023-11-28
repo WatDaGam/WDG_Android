@@ -2,6 +2,7 @@ package com.example.watdagam.main
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.watdagam.R
 import com.example.watdagam.databinding.ActivityMainBinding
 import com.example.watdagam.post.PostActivity
+import com.example.watdagam.utils.storage.StorageService
 
 private const val TAG_LIST = "list_fragment"
 private const val TAG_MY_PAGE = "my_page_fragment"
@@ -41,6 +43,20 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val profileService = StorageService.getInstance(this).getProfileService()
+        val reportedStories = profileService.getReportedStories()
+        reportedStories.forEach { content: String ->
+            val dialog = AlertDialog.Builder(this)
+                .setMessage("신고가 누적되어 메세지가 삭제되었습니다. 삭제된 메세지: $content")
+                .setPositiveButton("확인", null)
+                .create()
+            dialog.show()
+        }
+        reportedStories.clear()
     }
 
     private fun setFragment(tag: String, fragment: Fragment) {
