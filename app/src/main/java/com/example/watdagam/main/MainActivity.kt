@@ -28,11 +28,18 @@ class MainActivity : AppCompatActivity() {
                 R.id.listFragment -> {
                     setFragment(TAG_LIST, ListFragment())
                     binding.mainFrameLayout.findViewById<RecyclerView>(R.id.story_list)?.smoothScrollToPosition(0)
+                    true
                 }
-                R.id.postFragment -> startActivity(Intent(this, PostActivity::class.java))
-                R.id.myPageFragment -> setFragment(TAG_MY_PAGE, MyPageFragment())
+                R.id.postFragment -> {
+                    startActivity(Intent(this, PostActivity::class.java))
+                    false
+                }
+                R.id.myPageFragment -> {
+                    setFragment(TAG_MY_PAGE, MyPageFragment())
+                    true
+                }
+                else -> false
             }
-            true
         }
     }
 
