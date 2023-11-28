@@ -67,7 +67,7 @@ class WDGStoryService {
 
     companion object {
         private const val TAG = "WDG_story_service"
-        private const val BASE_URL = "http://43.200.68.255:8080"
+        private const val BASE_URL = "https://api.watdagam.com"
         private val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
