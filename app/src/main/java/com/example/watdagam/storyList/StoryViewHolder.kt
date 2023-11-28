@@ -127,7 +127,7 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
                         handler.postDelayed({
                             Toast.makeText(
                                 itemView.context,
-                                "${story.id} 메시지를 신고했습니다.",
+                                "메시지를 신고했습니다.",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }, 0)
