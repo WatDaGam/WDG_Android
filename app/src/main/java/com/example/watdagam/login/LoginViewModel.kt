@@ -3,7 +3,6 @@ package com.example.watdagam.login
 import android.Manifest
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
@@ -19,40 +18,47 @@ import com.example.watdagam.R
 import com.example.watdagam.Signup.SignupActivity
 import com.example.watdagam.api.WDGUserService
 import com.example.watdagam.main.MainActivity
+import com.example.watdagam.utils.KakaoLoginService
 import com.example.watdagam.utils.WDGLocationService
 import com.example.watdagam.utils.storage.StorageService
 import kotlinx.coroutines.launch
 
 class LoginViewModel: ViewModel() {
 
-    fun moveToMainActivity(context: Context) {
-        val intent = Intent(context, MainActivity::class.java)
-        context.startActivity(intent)
+    fun kakaoLogin(activity: AppCompatActivity) {
+        val containerLoginButtons = activity.findViewById<LinearLayout>(R.id.container_login_buttons)
+        containerLoginButtons.alpha = 0f
+        KakaoLoginService.login(activity,
+            onSuccess = { accessToken -> onKakaoLoginSuccess(activity, accessToken) },
+            onFailure = {
+                containerLoginButtons.alpha = 1f
+                Toast.makeText(activity, "카카오 로그인 실패", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
-
-    private fun moveToSignupActivity(context: Context) {
-        val intent = Intent(context, SignupActivity::class.java)
-        context.startActivity(intent)
-    }
-
-    fun onKakaoLoginSuccess(context: Context, accessToken: String) {
+    private fun onKakaoLoginSuccess(activity: AppCompatActivity, accessToken: String) {
         viewModelScope.launch {
             try {
-                val response = WDGUserService.login(context, "KAKAO", accessToken)
+                val response = WDGUserService.login(activity, "KAKAO", accessToken)
                 when (response.code()) {
-                    200 -> moveToMainActivity(context)
-                    201 -> moveToSignupActivity(context)
+                    200 -> {
+                        Toast.makeText(activity, "Login Success", Toast.LENGTH_SHORT).show()
+                        loadUserData(activity)
+                    }
+                    201 -> {
+                        val intent = Intent(activity, SignupActivity::class.java)
+                        activity.startActivity(intent)
+                    }
                     else -> throw Exception("Fail on wdg login")
                 }
             } catch (e: Exception) {
                 Log.e("WDG_login_activity", e.message ?: "")
-                Toast.makeText(context, "로그인 하지 못했습니다. 잠시 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
+                val containerLoginButtons = activity.findViewById<LinearLayout>(R.id.container_login_buttons)
+                containerLoginButtons.alpha = 1f
+                Toast.makeText(activity, "로그인 하지 못했습니다. 잠시 후 다시 시도해 주세요.", Toast.LENGTH_SHORT).show()
             }
 
         }
-    }
-    fun onKakaoLoginFailure(context: Context) {
-        Toast.makeText(context, "카카오 로그인 실패", Toast.LENGTH_SHORT).show()
     }
 
     fun startLocationTracking(activity: AppCompatActivity) {

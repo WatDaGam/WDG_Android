@@ -23,12 +23,8 @@ class LoginActivity : AppCompatActivity() {
         KakaoLoginService.initializeSdk(this)
 
         loginButtonKakao = this.findViewById(R.id.login_button_kakao)
-
         loginButtonKakao.setOnClickListener {
-            KakaoLoginService.login(this,
-                onSuccess = { accessToken -> viewModel.onKakaoLoginSuccess(this, accessToken) },
-                onFailure = { -> viewModel.onKakaoLoginFailure(this) },
-            )
+            viewModel.kakaoLogin(this)
         }
 
         TedPermission.create()
@@ -49,7 +45,6 @@ class LoginActivity : AppCompatActivity() {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
             .check()
-
     }
 
 }
