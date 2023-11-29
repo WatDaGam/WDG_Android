@@ -55,6 +55,7 @@ class LoginActivity : AppCompatActivity() {
         TedPermission.create()
             .setPermissionListener(object: PermissionListener {
                 override fun onPermissionGranted() {
+                    viewModel.startLocationTracking(this@LoginActivity)
                     if (viewModel.hasCachedToken(this@LoginActivity)) {
                         Timer().schedule(object: TimerTask() {
                             override fun run() {

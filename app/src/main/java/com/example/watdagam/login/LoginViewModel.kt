@@ -1,14 +1,19 @@
 package com.example.watdagam.login
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.watdagam.Signup.SignupActivity
 import com.example.watdagam.api.WDGUserService
 import com.example.watdagam.main.MainActivity
+import com.example.watdagam.utils.WDGLocationService
 import com.example.watdagam.utils.storage.StorageService
 import kotlinx.coroutines.launch
 
@@ -47,4 +52,16 @@ class LoginViewModel: ViewModel() {
     fun onKakaoLoginFailure(context: Context) {
         Toast.makeText(context, "카카오 로그인 실패", Toast.LENGTH_SHORT).show()
     }
+
+    fun startLocationTracking(activity: AppCompatActivity) {
+        val fineLocPermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+        val coarseLocPermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (fineLocPermission == PackageManager.PERMISSION_DENIED ||
+            coarseLocPermission == PackageManager.PERMISSION_DENIED) {
+            return
+        }
+        val locationService = WDGLocationService.getInstance(activity)
+        locationService.startLocationTracking()
+    }
+
 }
