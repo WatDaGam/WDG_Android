@@ -11,9 +11,9 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.watdagam.api.WDGStoryService
 import com.example.watdagam.main.MainActivity
 import com.example.watdagam.utils.WDGLocationService
+import com.example.watdagam.utils.api.StoryService
 import kotlinx.coroutines.launch
 
 class PostActivityViewModel: ViewModel() {
@@ -33,7 +33,7 @@ class PostActivityViewModel: ViewModel() {
         } else {
             viewModelScope.launch {
                 try {
-                    val response = WDGStoryService.uploadStory(
+                    val response = StoryService.uploadStory(
                         activity,
                         content,
                         _address.value!!.latitude,

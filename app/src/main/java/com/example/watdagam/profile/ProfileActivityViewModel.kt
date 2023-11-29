@@ -11,13 +11,12 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.watdagam.api.WDGStoryService
-import com.example.watdagam.api.WDGUserService
 import com.example.watdagam.storyList.StoryItem
-import com.example.watdagam.data.StoryDto
 import com.example.watdagam.utils.storage.StorageService
 import com.example.watdagam.utils.storage.storyRoom.MyStory
 import com.example.watdagam.utils.WDGLocationService
+import com.example.watdagam.utils.api.StoryService
+import com.example.watdagam.utils.api.UserService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,8 +53,8 @@ class ProfileActivityViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 // API를 통해 서버의 데이터 동기화
-                val profile = WDGUserService.getUserInfo(context).body() ?: throw Exception("Cannot fetch user info")
-                val myStoryList = WDGStoryService.getMyStoryList(context).body()?.stories ?: throw Exception("Cannot fetch my story list")
+                val profile = UserService.getUserInfo(context).body() ?: throw Exception("Cannot fetch user info")
+                val myStoryList = StoryService.getMyStoryList(context).body()?.stories ?: throw Exception("Cannot fetch my story list")
 
                 // Shared Preference 갱신
                 profileService.nickname = profile.nickname
@@ -95,7 +94,7 @@ class ProfileActivityViewModel: ViewModel() {
         }
     }
 
-    private fun storyDtoToMyStory(storyDto: StoryDto): MyStory {
+    private fun storyDtoToMyStory(storyDto: StoryService.StoryDto): MyStory {
         return MyStory(
             storyDto.id,
             storyDto.nickname,

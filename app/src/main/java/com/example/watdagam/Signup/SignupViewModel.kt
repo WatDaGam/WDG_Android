@@ -7,8 +7,8 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.watdagam.api.WDGUserService
 import com.example.watdagam.main.MainActivity
+import com.example.watdagam.utils.api.UserService
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
@@ -42,7 +42,7 @@ class SignupViewModel: ViewModel() {
                         .show()
                     nicknameStatus.value = invalid
                 } else {
-                    val response = WDGUserService.checkNickname(context, nickname)
+                    val response = UserService.checkNickname(context, nickname)
                     if (response.isSuccessful) {
                         nicknameStatus.value = valid
                     } else {
@@ -59,7 +59,7 @@ class SignupViewModel: ViewModel() {
     fun setNickname(nickname: String, context: Context) {
         viewModelScope.launch {
             try {
-                val response = WDGUserService.setNickname(context, nickname)
+                val response = UserService.setNickname(context, nickname)
                 if (response.isSuccessful) {
                     val intent = Intent(context, MainActivity::class.java)
                     context.startActivity(intent)

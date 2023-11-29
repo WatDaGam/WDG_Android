@@ -18,7 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.example.watdagam.R
-import com.example.watdagam.api.WDGStoryService
+import com.example.watdagam.utils.api.StoryService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -100,7 +100,7 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             likeAnimator.start()
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    val response = WDGStoryService.addLike(itemView.context, story.id)
+                    val response = StoryService.addLike(itemView.context, story.id)
                     if (response.isSuccessful) {
                         if (response.body() != null && story.likes != response.body()!!.likeNum) {
                             story.likes = response.body()!!.likeNum
@@ -121,7 +121,7 @@ class StoryViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             CoroutineScope(Dispatchers.IO).launch {
                 // Report story
                 try {
-                    val response = WDGStoryService.reportStory(itemView.context, story.id)
+                    val response = StoryService.reportStory(itemView.context, story.id)
                     if (response.isSuccessful) {
                         val handler = android.os.Handler(Looper.getMainLooper())
                         handler.postDelayed({

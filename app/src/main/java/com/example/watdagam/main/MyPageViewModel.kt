@@ -7,8 +7,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.watdagam.api.WDGUserService
 import com.example.watdagam.login.LoginActivity
+import com.example.watdagam.utils.api.UserService
 import com.example.watdagam.utils.storage.StorageService
 import kotlinx.coroutines.launch
 
@@ -33,7 +33,7 @@ class MyPageViewModel: ViewModel() {
             .setPositiveButton("네") {_, _ ->
                 viewModelScope.launch {
                     try {
-                        WDGUserService.withdraw(context)
+                        UserService.withdraw(context)
                         Toast.makeText(context, "회원 탈퇴 되었습니다.", Toast.LENGTH_SHORT).show()
                         val intent = Intent(context, LoginActivity::class.java)
                         context.startActivity(intent)

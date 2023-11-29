@@ -12,9 +12,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.watdagam.api.WDGStoryService
 import com.example.watdagam.storyList.StoryItem
 import com.example.watdagam.utils.WDGLocationService
+import com.example.watdagam.utils.api.StoryService
 import kotlinx.coroutines.launch
 
 class ListViewModel: ViewModel() {
@@ -78,7 +78,7 @@ class ListViewModel: ViewModel() {
     private fun fetchNewStoryList(context: Context, address: Address) {
         viewModelScope.launch {
             try {
-                val response = WDGStoryService.getStoryList(context, address.latitude, address.longitude)
+                val response = StoryService.getStoryList(context, address.latitude, address.longitude)
                 if (response.isSuccessful) {
                     val storyItemList = response.body()!!.stories.map { storyDto ->
                         StoryItem(

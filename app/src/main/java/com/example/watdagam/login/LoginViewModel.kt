@@ -16,10 +16,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.watdagam.R
 import com.example.watdagam.Signup.SignupActivity
-import com.example.watdagam.api.WDGUserService
 import com.example.watdagam.main.MainActivity
 import com.example.watdagam.utils.KakaoLoginService
 import com.example.watdagam.utils.WDGLocationService
+import com.example.watdagam.utils.api.UserService
 import com.example.watdagam.utils.storage.StorageService
 import kotlinx.coroutines.launch
 
@@ -39,7 +39,7 @@ class LoginViewModel: ViewModel() {
     private fun onKakaoLoginSuccess(activity: AppCompatActivity, accessToken: String) {
         viewModelScope.launch {
             try {
-                val response = WDGUserService.login(activity, "KAKAO", accessToken)
+                val response = UserService.login(activity, "KAKAO", accessToken)
                 when (response.code()) {
                     200 -> {
                         Toast.makeText(activity, "Login Success", Toast.LENGTH_SHORT).show()
@@ -80,7 +80,7 @@ class LoginViewModel: ViewModel() {
                     startAnimation(activity)
                     return@launch
                 }
-                val response = WDGUserService.getUserInfo(activity)
+                val response = UserService.getUserInfo(activity)
                 val profileService = StorageService.getInstance(activity).getProfileService()
                 if (response.isSuccessful) {
                     val body = response.body() ?: throw Exception("Response has no body")
