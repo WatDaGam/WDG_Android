@@ -81,7 +81,7 @@ object UserService {
         platformToken: String,
     ): Response<Void> {
         val response = userApi.login(platform, "Bearer $platformToken")
-        Log.d(TAG, "Get response login\n" + response.raw().toString())
+        Log.d(TAG, "${response.raw()} ${response.headers()} ${response.body()}")
         if (response.code() == 401) {
             throw Exception("Not Valid Token")
         }
@@ -124,7 +124,7 @@ object UserService {
             throw Exception("Not Valid Token")
         }
         val response = userApi.refreshToken(refreshToken)
-        Log.d(TAG, "Get response refreshtoken\n" + response.raw().toString())
+        Log.d(TAG, "${response.raw()} ${response.headers()} ${response.body()}")
         if (response.code() == 401) {
             requestLogin(context)
             throw Exception("Not Valid Token")
@@ -144,7 +144,7 @@ object UserService {
     ): Response<Void> {
         val accessToken = getAccessToken(context)
         val response = userApi.withdrawal("Bearer $accessToken")
-        Log.d(TAG, "Get response withdrawal\n" + response.raw().toString())
+        Log.d(TAG, "${response.raw()} ${response.headers()} ${response.body()}")
         if (response.code() == 401) {
             requestLogin(context)
             throw Exception("Not Valid Token")
@@ -164,8 +164,7 @@ object UserService {
         }
 
         val response = userApi.checkNickname("Bearer $tempToken", nickname)
-        Log.d(TAG, "nickname: $nickname")
-        Log.d(TAG, "Get response nickname/check\n" + response.raw().toString())
+        Log.d(TAG, "${response.raw()} ${response.headers()} ${response.body()}")
         if (response.code() == 401) {
             requestLogin(context)
             throw Exception("Not Valid Token")
@@ -185,7 +184,7 @@ object UserService {
         }
 
         val response = userApi.setNickname("Bearer $tempToken", nickname)
-        Log.d(TAG, "Get response nickname/set\n" + response.raw().toString())
+        Log.d(TAG, "${response.raw()} ${response.headers()} ${response.body()}")
         if (response.isSuccessful) {
             tokenService.setTempToken("", 0)
             val accessToken = response.headers()[KEY_ACCESS_TOKEN].toString().split(" ")[1]
@@ -207,8 +206,7 @@ object UserService {
     ): Response<UserInfoDto> {
         val accessToken = getAccessToken(context)
         val response = userApi.userinfo("Bearer $accessToken")
-        Log.d(TAG, "Get response userinfo\n" + response.raw().toString())
-        Log.d(TAG, response.body().toString())
+        Log.d(TAG, "${response.raw()} ${response.headers()} ${response.body()}")
         if (response.isSuccessful) {
             val reportedStories = response.body()?.reportedStories
             if (!reportedStories.isNullOrEmpty()) {

@@ -103,7 +103,7 @@ object StoryService {
         val accessToken = UserService.getAccessToken(context)
         val story = StoryUploadBodyDto(content, latitude, longitude)
         val response = storyApi.uploadStory("Bearer $accessToken", story)
-        Log.d(TAG, "Get response story/upload\n" + response.raw().toString())
+        Log.d(TAG, "${response.raw()} ${response.headers()} ${response.body()}")
         if (response.code() == 401) {
             throw Exception("Not Valid Token")
         }
@@ -116,7 +116,7 @@ object StoryService {
     ): Response<StoryDto> {
         val accessToken = UserService.getAccessToken(context)
         val response = storyApi.getStory("Bearer $accessToken", storyId)
-        Log.d(TAG, "Get response story/get\n" + response.raw().toString())
+        Log.d(TAG, "${response.raw()} ${response.headers()} ${response.body()}")
         if (response.code() == 401) {
             UserService.requestLogin(context)
             throw Exception("Not Valid Token")
@@ -130,7 +130,7 @@ object StoryService {
     ): Response<Void> {
         val accessToken = UserService.getAccessToken(context)
         val response = storyApi.deleteStory("Bearer $accessToken", storyId)
-        Log.d(TAG, "Get response story/delete\n" + response.raw().toString())
+        Log.d(TAG, "${response.raw()} ${response.headers()} ${response.body()}")
         if (response.code() == 401) {
             UserService.requestLogin(context)
             throw Exception("Not Valid Token")
@@ -146,7 +146,7 @@ object StoryService {
         val accessToken = UserService.getAccessToken(context)
         val locationDto = StoryListRenewBodyDto(latitude, longitude)
         val response = storyApi.getStoryList("Bearer $accessToken", locationDto)
-        Log.d(TAG, "Get response storyList/renew\n" + response.raw().toString())
+        Log.d(TAG, "${response.raw()} ${response.headers()} ${response.body()}")
         if (response.code() == 401) {
             UserService.requestLogin(context)
             throw Exception("Not Valid Token")
@@ -160,7 +160,7 @@ object StoryService {
     ): Response<AddLikeDto> {
         val accessToken = UserService.getAccessToken(context)
         val response = storyApi.likeStory("Bearer $accessToken", storyId)
-        Log.d(TAG, "Get response like/add\n" + response.raw().toString())
+        Log.d(TAG, "${response.raw()} ${response.headers()} ${response.body()}")
         if (response.code() == 401) {
             UserService.requestLogin(context)
             throw Exception("Not Valid Token")
@@ -173,7 +173,7 @@ object StoryService {
     ): Response<StoryListDto> {
         val accessToken = UserService.getAccessToken(context)
         val response = storyApi.getMyStoryList("Bearer $accessToken")
-        Log.d(TAG, "Get response myStory\n" + response.raw().toString())
+        Log.d(TAG, "${response.raw()} ${response.headers()} ${response.body()}")
         if (response.code() == 401) {
             UserService.requestLogin(context)
             throw Exception("Not Valid Token")
@@ -187,7 +187,7 @@ object StoryService {
     ): Response<Void> {
         val accessToken = UserService.getAccessToken(context)
         val response = storyApi.reportStory("Bearer $accessToken", storyId)
-        Log.d(TAG, "Get response report\n" + response.raw().toString())
+        Log.d(TAG, "${response.raw()} ${response.headers()} ${response.body()}")
         if (response.code() == 401) {
             UserService.requestLogin(context)
             throw Exception("Not Valid Token")
