@@ -157,14 +157,14 @@ class WDGUserService {
             nickname: String,
         ): Response<Void> {
             val tokenService = StorageService.getInstance(context).getTokenService()
-            val accessToken = tokenService.getTempToken()
-            if (accessToken.isEmpty()) {
+            val tempToken = tokenService.getTempToken()
+            if (tempToken.isEmpty()) {
                 requestLogin(context)
                 throw Exception("Not Valid Token")
             }
 
-            val response = userApi.checkNickname("Bearer $accessToken", nickname)
-            Log.d(TAG, "nickname: ${nickname}")
+            val response = userApi.checkNickname("Bearer $tempToken", nickname)
+            Log.d(TAG, "nickname: $nickname")
             Log.d(TAG, "Get response nickname/check\n" + response.raw().toString())
             if (response.code() == 401) {
                 requestLogin(context)
@@ -178,14 +178,23 @@ class WDGUserService {
             nickname: String,
         ): Response<Void> {
             val tokenService = StorageService.getInstance(context).getTokenService()
-            val accessToken = tokenService.getTempToken()
-            if (accessToken.isEmpty()) {
+            val tempToken = tokenService.getTempToken()
+            if (tempToken.isEmpty()) {
                 requestLogin(context)
                 throw Exception("Not Valid Token")
             }
 
-            val response = userApi.setNickname("Bearer $accessToken", nickname)
+            val response = userApi.setNickname("Bearer $tempToken", nickname)
             Log.d(TAG, "Get response nickname/set\n" + response.raw().toString())
+            if (response.isSuccessful) {
+                tokenService.setTempToken("", 0)
+                val accessToken = response.headers()[KEY_ACCESS_TOKEN].toString().split(" ")[1]
+                val accessExpiration = response.headers()[KEY_ACCESS_EXPIRATION].toString().toLong()
+                val refreshToken = response.headers()[KEY_REFRESH_TOKEN].toString()
+                val refreshExpiration = response.headers()[KEY_REFRESH_EXPIRATION].toString().toLong()
+                tokenService.setAccessToken(accessToken, accessExpiration)
+                tokenService.setRefreshToken(refreshToken, refreshExpiration)
+            }
             if (response.code() == 401) {
                 requestLogin(context)
                 throw Exception("Not Valid Token")
