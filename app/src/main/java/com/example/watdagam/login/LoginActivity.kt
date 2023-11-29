@@ -1,5 +1,6 @@
 package com.example.watdagam.login
 
+import android.Manifest
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import androidx.appcompat.app.AppCompatActivity
@@ -8,9 +9,12 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.activity.viewModels
 import com.example.watdagam.R
 import com.example.watdagam.utils.KakaoLoginService
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.normal.TedPermission
 import java.util.Timer
 import java.util.TimerTask
 
@@ -48,15 +52,32 @@ class LoginActivity : AppCompatActivity() {
             )
         }
 
-        if (viewModel.hasCachedToken(this)) {
-            Timer().schedule(object: TimerTask() {
-                override fun run() {
-                    viewModel.moveToMainActivity(this@LoginActivity)
+        TedPermission.create()
+            .setPermissionListener(object: PermissionListener {
+                override fun onPermissionGranted() {
+                    if (viewModel.hasCachedToken(this@LoginActivity)) {
+                        Timer().schedule(object: TimerTask() {
+                            override fun run() {
+                                viewModel.moveToMainActivity(this@LoginActivity)
+                            }
+                        }, 1000)
+                    } else {
+                        loginAnimation.start()
+                    }
                 }
-            }, 1000)
-        } else {
-            loginAnimation.start()
-        }
+
+                override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                    Toast.makeText(this@LoginActivity, "정확한 위치 사용을 허용하지 않으면 서비스를 이용할 수 없습니다.", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+            })
+            .setDeniedMessage("정확한 위치 권한이 필요합니다.")
+            .setPermissions(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            .check()
+
     }
 
 
