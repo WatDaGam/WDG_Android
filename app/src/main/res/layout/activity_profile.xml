@@ -28,6 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:fontFamily="@font/noto_sans_kr_medium"
             android:textSize="20sp"
             android:textColor="@color/toolbar_content"/>
 
@@ -55,11 +56,13 @@
                 android:id="@+id/profile_posts_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
+                android:fontFamily="@font/noto_sans_kr_medium"
+                android:textSize="16sp"
                 android:textColor="@color/black"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/noto_sans_kr_medium"
                 android:text="@string/profile_post"
                 android:textSize="12sp"
                 android:textColor="@color/black"/>
@@ -78,11 +81,13 @@
                 android:id="@+id/profile_likes_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
+                android:fontFamily="@font/noto_sans_kr_medium"
+                android:textSize="16sp"
                 android:textColor="@color/black"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/noto_sans_kr_medium"
                 android:text="@string/profile_like"
                 android:textSize="12sp"
                 android:textColor="@color/black"/>

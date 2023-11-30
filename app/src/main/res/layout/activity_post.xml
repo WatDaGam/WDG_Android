@@ -25,8 +25,9 @@
             android:id="@+id/toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/noto_sans_kr_medium"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:layout_gravity="center"/>
 
     </androidx.appcompat.widget.Toolbar>
@@ -44,8 +45,9 @@
             android:id="@+id/location_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/noto_sans_kr_medium"
             android:textColor="#FF888888"
-            android:textSize="16sp"
+            android:textSize="12sp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 
@@ -58,8 +60,9 @@
             android:autofillHints="none"
             android:inputType="textImeMultiLine"
             android:background="@null"
+            android:fontFamily="@font/noto_sans_kr_medium"
             android:textColor="@color/black"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:maxLength="100"
             android:textAlignment="textStart"
             android:layout_marginTop="20dp"
@@ -69,8 +72,9 @@
             android:id="@+id/text_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/noto_sans_kr_medium"
             android:textColor="@color/black"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:layout_marginBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/post"/>
@@ -79,9 +83,10 @@
             android:id="@+id/post"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/noto_sans_kr_medium"
             android:text="@string/post_send"
             android:textColor="@color/black"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:background="@drawable/bg_round_conner"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>

@@ -29,7 +29,8 @@
                 android:id="@+id/toolbar_place_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
+                android:fontFamily="@font/noto_sans_kr_semi_bold"
+                android:textSize="18sp"
                 android:textColor="@color/toolbar_content"/>
             <TextView
                 android:id="@+id/toolbar_gps"
