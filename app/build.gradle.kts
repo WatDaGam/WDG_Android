@@ -100,4 +100,7 @@ dependencies {
     val ted_version = "3.3.0"
     implementation("io.github.ParkSangGwon:tedpermission-normal:$ted_version")
     implementation("io.github.ParkSangGwon:tedpermission-coroutine:$ted_version")
+
+    // ADMob
+    implementation("com.google.android.gms:play-services-ads:22.5.0")
 }
