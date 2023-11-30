@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.watdagam.R
 import com.example.watdagam.storyList.StoryAdapter
 import com.example.watdagam.databinding.ActivityProfileBinding
 import com.example.watdagam.storyList.StoryItem
@@ -35,7 +37,9 @@ class ProfileActivity : AppCompatActivity() {
             it.setHasStableIds(true)
         }
         viewBinding.myStoryList.layoutManager = LinearLayoutManager(this)
-        viewBinding.myStoryList.addItemDecoration((DividerItemDecoration(this, LinearLayoutManager.VERTICAL)))
+        viewBinding.myStoryList.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL).also {
+            it.setDrawable(AppCompatResources.getDrawable(this, R.color.gray)!!)
+        })
         viewBinding.myStoryList.adapter = storyAdapter
         model.getMyStoryList().observe(this) { myStoryList ->
             storyList.clear()

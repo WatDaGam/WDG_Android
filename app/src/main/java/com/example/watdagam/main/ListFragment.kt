@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.watdagam.R
 import com.example.watdagam.databinding.FragmentListBinding
 import com.example.watdagam.storyList.StoryAdapter
 import com.example.watdagam.storyList.StoryItem
@@ -33,7 +35,9 @@ class ListFragment : Fragment() {
             it.setHasStableIds(true)
         }
         viewBinding.storyList.layoutManager = LinearLayoutManager(requireContext())
-        viewBinding.storyList.addItemDecoration((DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)))
+        viewBinding.storyList.addItemDecoration(DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL).also {
+            it.setDrawable(AppCompatResources.getDrawable(requireContext(), R.color.gray)!!)
+        })
         viewBinding.storyList.adapter = storyAdapter
         model.getStoryItemList().observe(viewLifecycleOwner) { list ->
             storyList.clear()
