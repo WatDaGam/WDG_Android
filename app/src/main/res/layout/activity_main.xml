@@ -20,6 +20,7 @@
         android:layout_height="wrap_content"
         app:itemBackground="@drawable/bg_navigation"
         app:itemIconTint="@drawable/menu_select_color"
+        app:itemActiveIndicatorStyle="@style/navigation_indicator"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/navigation_menu"
         app:labelVisibilityMode="unlabeled"
