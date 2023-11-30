@@ -8,27 +8,17 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:background="@color/black"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        style="@style/toolbar">
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/toolbar_back"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@null"
-            android:src="@drawable/ic_arrow_back"
-            android:contentDescription="@string/toolbar_back"/>
+            style="@style/toolbar_back"/>
 
         <TextView
             android:id="@+id/toolbar_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/noto_sans_kr_medium"
-            android:textColor="@color/white"
-            android:textSize="18sp"
-            android:layout_gravity="center"/>
+            style="@style/toolbar_title"/>
 
     </androidx.appcompat.widget.Toolbar>
 

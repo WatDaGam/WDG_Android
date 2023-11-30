@@ -25,8 +25,8 @@ class ListFragment : Fragment() {
         val storyList = ArrayList<StoryItem>()
 
         model.getCurrentAddress().observe(viewLifecycleOwner) { address ->
-            viewBinding.toolbarPlaceName.text = address.featureName
-            viewBinding.toolbarGps.text = String.format("%.5f %.5f", address.latitude, address.longitude)
+            viewBinding.toolbarTitle.text = address.featureName
+            viewBinding.toolbarLocation.text = String.format("%.5f %.5f", address.latitude, address.longitude)
         }
 
         val storyAdapter = StoryAdapter(storyList).also {
