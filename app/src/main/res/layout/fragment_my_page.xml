@@ -16,6 +16,7 @@
 
         <TextView
             android:id="@+id/toolbar_title"
+            android:text="@string/toolbar_title_my_page"
             style="@style/toolbar_title"/>
 
     </androidx.appcompat.widget.Toolbar>
