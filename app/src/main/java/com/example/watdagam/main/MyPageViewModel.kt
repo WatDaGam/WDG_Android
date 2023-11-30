@@ -19,8 +19,7 @@ class MyPageViewModel: ViewModel() {
 
     fun logout(context: Context) {
         val tokenService = StorageService.getInstance(context).getTokenService()
-        tokenService.setAccessToken("", 0)
-        tokenService.setRefreshToken("", 0)
+        tokenService.expireTokens()
         val intent = Intent(context, LoginActivity::class.java)
         context.startActivity(intent)
         Toast.makeText(context, "로그아웃 되었습니다", Toast.LENGTH_SHORT).show()
@@ -33,7 +32,12 @@ class MyPageViewModel: ViewModel() {
             .setPositiveButton("네") {_, _ ->
                 viewModelScope.launch {
                     try {
-                        UserService.withdraw(context)
+                        val response = UserService.withdraw(context)
+                        if (!response.isSuccessful) {
+                            throw Exception("response is not Successful")
+                        }
+                        val tokenService = StorageService.getInstance(context).getTokenService()
+                        tokenService.expireTokens()
                         Toast.makeText(context, "회원 탈퇴 되었습니다.", Toast.LENGTH_SHORT).show()
                         val intent = Intent(context, LoginActivity::class.java)
                         context.startActivity(intent)
