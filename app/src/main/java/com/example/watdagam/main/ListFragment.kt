@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.watdagam.databinding.FragmentListBinding
 import com.example.watdagam.storyList.StoryAdapter
 import com.example.watdagam.storyList.StoryItem
+import com.google.android.gms.ads.AdRequest
 
 class ListFragment : Fragment() {
     private lateinit var viewBinding: FragmentListBinding
@@ -46,6 +47,9 @@ class ListFragment : Fragment() {
             model.getStoryItemList().postValue(ArrayList())
             model.reloadLocation(requireActivity())
         }
+
+        val adRequest = AdRequest.Builder().build()
+        viewBinding.adView.loadAd(adRequest)
 
 
         model.startLocationTracking(requireActivity(), viewLifecycleOwner)

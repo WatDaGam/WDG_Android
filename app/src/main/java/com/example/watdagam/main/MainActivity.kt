@@ -11,6 +11,7 @@ import com.example.watdagam.R
 import com.example.watdagam.databinding.ActivityMainBinding
 import com.example.watdagam.post.PostActivity
 import com.example.watdagam.utils.storage.StorageService
+import com.google.android.gms.ads.MobileAds
 
 private const val TAG_LIST = "list_fragment"
 private const val TAG_MY_PAGE = "my_page_fragment"
@@ -20,6 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MobileAds.initialize(this) {}
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
