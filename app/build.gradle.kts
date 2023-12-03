@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.watdagam"
+    namespace = "com.watdagam.android"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.watdagam"
+        applicationId = "com.watdagam.android"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 31
         versionCode = 1
         versionName = "1.0"
 
