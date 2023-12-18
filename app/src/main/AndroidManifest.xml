@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!-- 인터넷 사용 권한 설정 -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- Location 사용 권한 설정 -->
+<!--    인터넷 사용 권한 설정 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+<!--    Location 사용 권한 설정 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<!--    Advertising ID (for 13 or higher SDK)-->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
 
     <application
         android:allowBackup="true"
@@ -16,13 +19,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Watdagam"
         tools:targetApi="31">
+<!--    Activities -->
         <activity
             android:name=".profile.ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".post.PostActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize" /> <!-- Activities -->
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".login.LoginActivity"
             android:exported="true">
@@ -39,7 +43,8 @@
         <activity
             android:name=".Signup.SignupActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize" /> <!-- Kakao Login -->
+            android:windowSoftInputMode="adjustResize" />
+<!--    Kakao Login -->
         <activity
             android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">
@@ -55,6 +60,7 @@
                     android:scheme="kakao27c267b47e61135cd098eb3fc9270bc6" />
             </intent-filter>
         </activity>
+<!--    ADMob -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-6963315923764115~8716676385"/>

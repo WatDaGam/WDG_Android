@@ -12,11 +12,12 @@ android {
     defaultConfig {
         applicationId = "com.watdagam.android"
         minSdk = 26
-        targetSdk = 31
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 33
+        versionCode = 3
+        versionName = "0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        versionNameSuffix = "alpha-test"
     }
 
     buildTypes {

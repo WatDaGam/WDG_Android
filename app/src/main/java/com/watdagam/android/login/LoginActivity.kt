@@ -7,31 +7,25 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.viewModels
 import com.watdagam.android.R
-import com.watdagam.android.utils.KakaoLoginService
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.normal.TedPermission
+import com.watdagam.android.utils.api.KakaoApi
 
 class LoginActivity : AppCompatActivity() {
-
     private val viewModel: LoginViewModel by viewModels()
-
     private lateinit var loginButtonKakao: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        KakaoLoginService.initializeSdk(this)
 
-        loginButtonKakao = this.findViewById(R.id.login_button_kakao)
-        loginButtonKakao.setOnClickListener {
-            viewModel.kakaoLogin(this)
-        }
+        KakaoApi.init(this)
 
         TedPermission.create()
             .setPermissionListener(object: PermissionListener {
                 override fun onPermissionGranted() {
                     viewModel.startLocationTracking(this@LoginActivity)
-                    viewModel.loadUserData(this@LoginActivity)
+                    viewModel.checkUser(this@LoginActivity)
                 }
 
                 override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {

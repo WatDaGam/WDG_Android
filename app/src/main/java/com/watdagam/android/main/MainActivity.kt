@@ -2,6 +2,9 @@ package com.watdagam.android.main
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -16,8 +19,8 @@ import com.google.android.gms.ads.MobileAds
 private const val TAG_LIST = "list_fragment"
 private const val TAG_MY_PAGE = "my_page_fragment"
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
+    private var lastBackPressedTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +48,21 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
-    }
 
+        this.onBackPressedDispatcher.addCallback(this, backPressCallback)
+
+    }
+    private val backPressCallback = object: OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastBackPressedTime >= 1_500) {
+                lastBackPressedTime = currentTime
+                Toast.makeText(this@MainActivity, "뒤로가기를 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                finishAffinity()
+            }
+        }
+    }
     override fun onResume() {
         super.onResume()
         val profileService = StorageService.getInstance(this).getProfileService()
